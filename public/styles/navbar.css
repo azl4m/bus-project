@@ -1,4 +1,3 @@
-
 .nav-link {
     display: flex;
     flex-direction: column;
@@ -6,6 +5,8 @@
     position: relative;
     color: #666;
     transition: color 0.3s;
+    text-decoration: none;
+    margin: 0 20px; /* Adds gap between links */
 }
 
 .nav-link:hover {
@@ -15,8 +16,9 @@
 .nav-link::after {
     content: '';
     position: absolute;
-    bottom: -2px;
-    left: 0;
+    bottom: -5px; /* Adjust position of underline */
+    left: 50%;
+    transform: translateX(-50%);
     width: 0;
     height: 2px;
     background-color: #0dcaf0;
@@ -36,30 +38,24 @@
     font-size: 0.8rem;
 }
 
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap; /* Prevent wrapping */
+}
+
 @media (max-width: 576px) {
     .nav-icon {
         font-size: 1.2rem;
     }
+
     .nav-text {
         font-size: 0.7rem;
     }
+
+    .nav-link {
+        margin: 0 8px; /* Reduce gap slightly for smaller screens */
+    }
 }
-
-/* Ensure the main container takes the full height */
-html, body {
-    height: 100%;
-    margin: 0;
-}
-
-.main-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* Ensure full height */
-}
-
-/* Main content should expand to fill available space */
-.content {
-    flex: 1;
-}
-
-

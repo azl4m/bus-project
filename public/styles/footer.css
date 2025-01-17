@@ -1,7 +1,27 @@
 /* Footer styles */
-.footer {
-    margin-top: auto; /* Push footer to the bottom */
-    padding: 20px 0;
-    background-color: white;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-}
+/* .footer {
+    background-color: #f8f9fa; 
+    text-align: center;
+    padding: 10px 0;
+    color: #6c757d; 
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+} */
+
+/* Ensure footer stays at the bottom if content is small */
+/* body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0; 
+} */
+/* 
+.main-container {
+    flex: 1;
+} */
+
+/* Add margin above footer */
+/* .mt-4 {
+    margin-top: 1rem !important;
+} */
