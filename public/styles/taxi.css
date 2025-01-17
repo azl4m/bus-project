@@ -1,0 +1,79 @@
+/* body {
+    background-color: #f0f0f0;
+    padding: 20px;
+} */
+    .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: border-bottom 0.1s;
+        }
+
+        .result-card:hover {
+            border-bottom: 3px solid #0000cc;
+        }
+
+        .car-icon {
+            color: #0000cc;
+            font-size: 1.5rem;
+            margin-right: 12px;
+        }
+
+        .phone-icon {
+            color: #00cc66;
+            font-size: 1.5rem;
+            transition: color 0.1s;
+        }
+        .search-icon{
+            color: #666;
+        }
+        .search-icon:hover{
+            color:#2933e2;
+        }
+        
+
+        .phone-number {
+            color: #00cc66;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.1s;
+        }
+
+        .phone-number:hover {
+            color: #009944 !important;
+        }
+
+        .phone-number:hover .phone-icon {
+            color: #009944;
+        }
+
+        .search-input {
+            border: none;
+            width: 100%;
+            padding: 8px;
+            font-size: 1.1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+        }
+
+        .search-icon {
+            color: #666;
+            font-size: 1.2rem;
+        }
