@@ -1,0 +1,45 @@
+.nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    color: #666;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #333;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #0dcaf0;
+    transition: width 0.3s;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-icon {
+    font-size: 1.5rem;
+    margin-bottom: 2px;
+}
+
+.nav-text {
+    font-size: 0.8rem;
+}
+
+@media (max-width: 576px) {
+    .nav-icon {
+        font-size: 1.2rem;
+    }
+    .nav-text {
+        font-size: 0.7rem;
+    }
+}
