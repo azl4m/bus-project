@@ -6,5 +6,6 @@ const router = express.Router()
 
 router.get('/',busController.busSearch)
 router.get("/auto-taxi",taxiController.getTaxiPage)
+router.get("/busResult",busController.resultBus)
 
 module.exports = router

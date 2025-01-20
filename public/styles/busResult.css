@@ -1,0 +1,137 @@
+.bus-result-container {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 15px 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+    min-height: 150px;
+}
+
+.bus-result-container:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.bus-result-container:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: skyblue;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+.bus-result-company {
+    color: #4285f4;
+    font-size: 24px;
+    font-weight: 500;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.bus-result-route {
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+    margin-top: 10px;
+}
+
+.bus-result-time {
+    font-size: 24px;
+    font-weight: bold;
+    position: absolute;
+    bottom: 35px;
+    background: white;
+    padding: 0 10px;
+    z-index: 1;
+}
+
+.bus-result-time-left {
+    left: 20px;
+}
+
+.bus-result-time-right {
+    right: 20px;
+}
+
+.bus-result-duration {
+    position: absolute;
+    left: 50%;
+    bottom: 50px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    color: #666;
+    background: white;
+    padding: 0 10px;
+    z-index: 1;
+}
+
+.bus-result-line {
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: #e0e0e0;
+}
+
+.bus-result-icon {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #4285f4;
+    font-size: 18px;
+    background: white;
+    padding: 0 10px;
+}
+
+.bus-result-dots {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.bus-result-dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.dot-red { background-color: #ff4444; }
+.dot-green { background-color: #00C851; }
+.dot-yellow { background-color: #ffbb33; }
+
+@media (max-width: 768px) {
+    .bus-result-company {
+        font-size: 20px;
+    }
+    
+    .bus-result-time {
+        font-size: 20px;
+    }
+
+    .bus-result-line {
+        left: 10px;
+        right: 10px;
+    }
+
+    .bus-result-time-left {
+        left: 10px;
+    }
+
+    .bus-result-time-right {
+        right: 10px;
+    }
+}
