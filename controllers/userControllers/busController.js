@@ -5,7 +5,14 @@ const busSearch = async(req,res)=>{
         console.log("error in busSearch "+error.message)
     }
 }
-
+const resultBus = async(req,res)=>{
+    try {
+        res.render("busResult")
+    } catch (error) {
+        console.log("error in bus result "+error.message)
+    }
+}
 module.exports={
-    busSearch
+    busSearch,
+    resultBus
 }
