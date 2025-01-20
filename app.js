@@ -3,9 +3,11 @@ const app = express()
 const env = require('dotenv').config()
 const path = require("path")
 const userRoute = require('./routes/userRoutes')
+const nocache = require("nocache")
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(nocache())
 
 app.set("view engine","ejs")
 app.set("views",[path.join(__dirname,"views/user"),path.join(__dirname,"views/admin")])
