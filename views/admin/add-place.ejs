@@ -92,9 +92,7 @@
 <body>
   <div class="form-container">
     <h2>Place Form</h2>
-    <% if (success) { %>
-      <p style="color: green;">Form submitted successfully!</p>
-    <% } %>
+    
     <form id="placeForm" >
       <div class="form-group">
         <label for="place">Place</label>
@@ -129,7 +127,7 @@
       // Validate Place
       const placeInput = document.getElementById('place');
       const placeError = document.getElementById('placeError');
-      if (!placeInput.value.match(/^[A-Za-z\s]{3,50}$/)) {
+      if (!placeInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9])\1{2})[A-Za-z0-9]*$/)) {
         isValid = false;
         placeError.style.display = 'block';
       } else {
@@ -139,7 +137,7 @@
       // Validate City
       const cityInput = document.getElementById('city');
       const cityError = document.getElementById('cityError');
-      if (!cityInput.value.match(/^[A-Za-z\s]{3,50}$/)) {
+      if (!cityInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9])\1{2})[A-Za-z0-9]*$/)) {
         isValid = false;
         cityError.style.display = 'block';
       } else {
@@ -149,7 +147,7 @@
       // Validate District
       const districtInput = document.getElementById('district');
       const districtError = document.getElementById('districtError');
-      if (!districtInput.value.match(/^[A-Za-z\s]{3,50}$/)) {
+      if (!districtInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9])\1{2})[A-Za-z0-9]*$/)) {
         isValid = false;
         districtError.style.display = 'block';
       } else {
