@@ -3,6 +3,7 @@ const app = express()
 const env = require('dotenv').config()
 const path = require("path")
 const userRoute = require('./routes/userRoutes')
+const adminRoutes = require("./routes/adminRoutes")
 const nocache = require("nocache")
 
 app.use(express.json())
@@ -17,6 +18,7 @@ const port = process.env.PORT
 app.listen(port,()=> console.log("server running "+port))
 
 app.use('/',userRoute)
+app.use('/admin',adminRoutes)
 
 
 
