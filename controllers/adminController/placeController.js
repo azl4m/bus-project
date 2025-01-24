@@ -15,7 +15,7 @@ const postAddPlace = async(req,res) => {
         place = placeHelper.capitalizeFirstLetter(place)
         city = placeHelper.capitalizeFirstLetter(city)
         district = placeHelper.capitalizeFirstLetter(district)
-        const existingPlace = Place.findOne({
+        const existingPlace = await Place.findOne({
             $and: [
                 { place: place },
                 { city: city }
