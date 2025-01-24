@@ -3,31 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Route Form</title>
+  <title>Add Route</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      background-color: #f8f9fa;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background-color: #f4f4f4;
     }
 
     .form-container {
       background: #fff;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       max-width: 500px;
       width: 100%;
     }
 
-    .form-container h2 {
-      margin-bottom: 20px;
+    .form-container h1 {
       text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #333;
     }
 
     .form-group {
@@ -38,33 +40,26 @@
       display: block;
       margin-bottom: 5px;
       font-weight: bold;
+      color: #333;
     }
 
-    .form-group input {
+    .form-group input,
+    .form-group select {
       width: 100%;
       padding: 8px;
+      font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      font-size: 16px;
+      box-sizing: border-box;
     }
 
-    .form-group input:focus {
-      border-color: #007BFF;
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #007bff;
       outline: none;
     }
 
-    .error-message {
-      color: red;
-      font-size: 14px;
-      margin-top: 5px;
-      display: none;
-    }
-
-    .stops-container {
-      margin-bottom: 20px;
-    }
-
-    .stop-item {
+    .stop-entry {
       margin-bottom: 15px;
       padding: 10px;
       background: #f9f9f9;
@@ -72,37 +67,32 @@
       border-radius: 5px;
     }
 
-    .stop-item button {
-      margin-top: 10px;
-      padding: 5px 10px;
-      font-size: 14px;
-      color: #fff;
-      background: #ff4d4d;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .stop-item button:hover {
-      background: #cc0000;
-    }
-
     .form-actions {
       text-align: center;
+      margin-top: 20px;
     }
 
     .form-actions button {
       padding: 10px 20px;
       font-size: 16px;
       color: #fff;
-      background: #007BFF;
+      background-color: #007bff;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      margin-right: 10px;
     }
 
     .form-actions button:hover {
-      background: #0056b3;
+      background-color: #0056b3;
+    }
+
+    .form-actions .add-stop-btn {
+      background-color: #28a745;
+    }
+
+    .form-actions .add-stop-btn:hover {
+      background-color: #218838;
     }
 
     @media (max-width: 480px) {
@@ -112,109 +102,79 @@
 
       .form-actions button {
         width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .form-actions button:last-child {
+        margin-bottom: 0;
       }
     }
   </style>
 </head>
 <body>
   <div class="form-container">
-    <h2>Route Form</h2>
-    <form id="routeForm">
+    <h1>Add Route</h1>
+    <form action="/add-route" method="POST" id="routeForm">
+      <!-- Route Name -->
       <div class="form-group">
-        <label for="routeName">Route Name</label>
-        <input type="text" id="routeName" name="routeName" required minlength="3" maxlength="50" />
-        <div class="error-message" id="routeNameError">Please enter a valid route name (3-50 characters).</div>
+        <label for="routeName">Route Name:</label>
+        <input type="text" id="routeName" name="routeName" required>
       </div>
 
-      <div class="stops-container" id="stopsContainer">
-        <h3>Stops</h3>
+      <!-- Stops Section -->
+      <div id="stops-container">
+        <div class="stop-entry">
+          <div class="form-group">
+            <label for="placeId-1">Place:</label>
+            <select id="placeId-1" name="stops[0][placeId]" required>
+              <option value="">Select Place</option>
+              <option value="place1">Place 1</option>
+              <option value="place2">Place 2</option>
+              <option value="place3">Place 3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="delay-1">Delay (minutes):</label>
+            <input type="number" id="delay-1" name="stops[0][delay]" required>
+          </div>
+        </div>
       </div>
-      <button type="button" id="addStopButton">Add Stop</button>
 
+      <!-- Buttons -->
       <div class="form-actions">
+        <button type="button" class="add-stop-btn" onclick="addStop()">Add Stop</button>
         <button type="submit">Submit</button>
       </div>
     </form>
   </div>
 
   <script>
-    const form = document.getElementById('routeForm');
-    const stopsContainer = document.getElementById('stopsContainer');
-    const addStopButton = document.getElementById('addStopButton');
+    let stopCount = 1;
 
-    let stopIndex = 0;
+    function addStop() {
+      const stopsContainer = document.getElementById('stops-container');
+      const newStop = document.createElement('div');
+      newStop.classList.add('stop-entry');
 
-    // Function to add a new stop
-    addStopButton.addEventListener('click', () => {
-      const stopDiv = document.createElement('div');
-      stopDiv.classList.add('stop-item');
-      stopDiv.setAttribute('data-index', stopIndex);
-
-      stopDiv.innerHTML = `
+      newStop.innerHTML = `
         <div class="form-group">
-          <label for="placeId-${stopIndex}">Place ID</label>
-          <input type="text" id="placeId-${stopIndex}" name="stops[${stopIndex}][placeId]" required />
-          <div class="error-message" id="placeIdError-${stopIndex}">Please enter a valid Place ID.</div>
+          <label for="placeId-${stopCount + 1}">Place:</label>
+          <select id="placeId-${stopCount + 1}" name="stops[${stopCount}][placeId]" required>
+            <option value="">Select Place</option>
+            <option value="place1">Place 1</option>
+            <option value="place2">Place 2</option>
+            <option value="place3">Place 3</option>
+          </select>
         </div>
         <div class="form-group">
-          <label for="delay-${stopIndex}">Delay (in minutes)</label>
-          <input type="number" id="delay-${stopIndex}" name="stops[${stopIndex}][delay]" required min="0" />
-          <div class="error-message" id="delayError-${stopIndex}">Please enter a valid delay (non-negative number).</div>
+          <label for="delay-${stopCount + 1}">Delay (minutes):</label>
+          <input type="number" id="delay-${stopCount + 1}" name="stops[${stopCount}][delay]" required>
         </div>
-        <button type="button" class="remove-stop-button">Remove Stop</button>
       `;
 
-      stopsContainer.appendChild(stopDiv);
-
-      stopDiv.querySelector('.remove-stop-button').addEventListener('click', () => {
-        stopDiv.remove();
-      });
-
-      stopIndex++;
-    });
-
-    // Validate the form
-    form.addEventListener('submit', function (event) {
-      let isValid = true;
-
-      // Validate Route Name
-      const routeNameInput = document.getElementById('routeName');
-      const routeNameError = document.getElementById('routeNameError');
-      if (routeNameInput.value.length < 3 || routeNameInput.value.length > 50) {
-        isValid = false;
-        routeNameError.style.display = 'block';
-      } else {
-        routeNameError.style.display = 'none';
-      }
-
-      // Validate Stops
-      const stops = document.querySelectorAll('.stop-item');
-      stops.forEach((stop) => {
-        const index = stop.getAttribute('data-index');
-        const placeIdInput = document.getElementById(`placeId-${index}`);
-        const placeIdError = document.getElementById(`placeIdError-${index}`);
-        const delayInput = document.getElementById(`delay-${index}`);
-        const delayError = document.getElementById(`delayError-${index}`);
-
-        if (!placeIdInput.value.trim()) {
-          isValid = false;
-          placeIdError.style.display = 'block';
-        } else {
-          placeIdError.style.display = 'none';
-        }
-
-        if (delayInput.value === '' || delayInput.value < 0) {
-          isValid = false;
-          delayError.style.display = 'block';
-        } else {
-          delayError.style.display = 'none';
-        }
-      });
-
-      if (!isValid) {
-        event.preventDefault();
-      }
-    });
+      stopsContainer.appendChild(newStop);
+      stopCount++;
+    }
   </script>
 </body>
 </html>
