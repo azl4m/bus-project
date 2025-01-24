@@ -27,8 +27,8 @@
     color: white;
     border: none;
     position: absolute;
-    right: -20px;
-    top: 20px;
+    right: -0px;
+    top: 50px;
     transition: background-color 0.3s ease;
 }
 
@@ -46,7 +46,7 @@
     border: none;
     border-radius: 5px;
     padding: 0.75rem 2rem;
-    width: 200px;
+    width: 100%;
     transition: background-color 0.3s ease;
 }
 
