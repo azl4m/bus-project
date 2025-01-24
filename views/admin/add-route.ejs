@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Route Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .form-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .form-container h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    .form-group input:focus {
+      border-color: #007BFF;
+      outline: none;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .stops-container {
+      margin-bottom: 20px;
+    }
+
+    .stop-item {
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .stop-item button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      font-size: 14px;
+      color: #fff;
+      background: #ff4d4d;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .stop-item button:hover {
+      background: #cc0000;
+    }
+
+    .form-actions {
+      text-align: center;
+    }
+
+    .form-actions button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background: #007BFF;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .form-actions button:hover {
+      background: #0056b3;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 15px;
+      }
+
+      .form-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Route Form</h2>
+    <form id="routeForm">
+      <div class="form-group">
+        <label for="routeName">Route Name</label>
+        <input type="text" id="routeName" name="routeName" required minlength="3" maxlength="50" />
+        <div class="error-message" id="routeNameError">Please enter a valid route name (3-50 characters).</div>
+      </div>
+
+      <div class="stops-container" id="stopsContainer">
+        <h3>Stops</h3>
+      </div>
+      <button type="button" id="addStopButton">Add Stop</button>
+
+      <div class="form-actions">
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('routeForm');
+    const stopsContainer = document.getElementById('stopsContainer');
+    const addStopButton = document.getElementById('addStopButton');
+
+    let stopIndex = 0;
+
+    // Function to add a new stop
+    addStopButton.addEventListener('click', () => {
+      const stopDiv = document.createElement('div');
+      stopDiv.classList.add('stop-item');
+      stopDiv.setAttribute('data-index', stopIndex);
+
+      stopDiv.innerHTML = `
+        <div class="form-group">
+          <label for="placeId-${stopIndex}">Place ID</label>
+          <input type="text" id="placeId-${stopIndex}" name="stops[${stopIndex}][placeId]" required />
+          <div class="error-message" id="placeIdError-${stopIndex}">Please enter a valid Place ID.</div>
+        </div>
+        <div class="form-group">
+          <label for="delay-${stopIndex}">Delay (in minutes)</label>
+          <input type="number" id="delay-${stopIndex}" name="stops[${stopIndex}][delay]" required min="0" />
+          <div class="error-message" id="delayError-${stopIndex}">Please enter a valid delay (non-negative number).</div>
+        </div>
+        <button type="button" class="remove-stop-button">Remove Stop</button>
+      `;
+
+      stopsContainer.appendChild(stopDiv);
+
+      stopDiv.querySelector('.remove-stop-button').addEventListener('click', () => {
+        stopDiv.remove();
+      });
+
+      stopIndex++;
+    });
+
+    // Validate the form
+    form.addEventListener('submit', function (event) {
+      let isValid = true;
+
+      // Validate Route Name
+      const routeNameInput = document.getElementById('routeName');
+      const routeNameError = document.getElementById('routeNameError');
+      if (routeNameInput.value.length < 3 || routeNameInput.value.length > 50) {
+        isValid = false;
+        routeNameError.style.display = 'block';
+      } else {
+        routeNameError.style.display = 'none';
+      }
+
+      // Validate Stops
+      const stops = document.querySelectorAll('.stop-item');
+      stops.forEach((stop) => {
+        const index = stop.getAttribute('data-index');
+        const placeIdInput = document.getElementById(`placeId-${index}`);
+        const placeIdError = document.getElementById(`placeIdError-${index}`);
+        const delayInput = document.getElementById(`delay-${index}`);
+        const delayError = document.getElementById(`delayError-${index}`);
+
+        if (!placeIdInput.value.trim()) {
+          isValid = false;
+          placeIdError.style.display = 'block';
+        } else {
+          placeIdError.style.display = 'none';
+        }
+
+        if (delayInput.value === '' || delayInput.value < 0) {
+          isValid = false;
+          delayError.style.display = 'block';
+        } else {
+          delayError.style.display = 'none';
+        }
+      });
+
+      if (!isValid) {
+        event.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>

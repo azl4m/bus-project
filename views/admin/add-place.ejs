@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Place Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .form-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .form-container h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    .form-group input:focus {
+      border-color: #007BFF;
+      outline: none;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .form-actions {
+      text-align: center;
+    }
+
+    .form-actions button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background: #007BFF;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .form-actions button:hover {
+      background: #0056b3;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 15px;
+      }
+
+      .form-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Place Form</h2>
+    <form id="placeForm">
+      <div class="form-group">
+        <label for="place">Place</label>
+        <input type="text" id="place" name="place" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <div class="error-message" id="placeError">Please enter a valid place name (letters only, 3-50 characters).</div>
+      </div>
+
+      <div class="form-group">
+        <label for="city">City</label>
+        <input type="text" id="city" name="city" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <div class="error-message" id="cityError">Please enter a valid city name (letters only, 3-50 characters).</div>
+      </div>
+
+      <div class="form-group">
+        <label for="district">District</label>
+        <input type="text" id="district" name="district" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <div class="error-message" id="districtError">Please enter a valid district name (letters only, 3-50 characters).</div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('placeForm');
+
+    form.addEventListener('submit', function (event) {
+      let isValid = true;
+
+      // Validate Place
+      const placeInput = document.getElementById('place');
+      const placeError = document.getElementById('placeError');
+      if (!placeInput.value.match(/^[A-Za-z\s]{3,50}$/)) {
+        isValid = false;
+        placeError.style.display = 'block';
+      } else {
+        placeError.style.display = 'none';
+      }
+
+      // Validate City
+      const cityInput = document.getElementById('city');
+      const cityError = document.getElementById('cityError');
+      if (!cityInput.value.match(/^[A-Za-z\s]{3,50}$/)) {
+        isValid = false;
+        cityError.style.display = 'block';
+      } else {
+        cityError.style.display = 'none';
+      }
+
+      // Validate District
+      const districtInput = document.getElementById('district');
+      const districtError = document.getElementById('districtError');
+      if (!districtInput.value.match(/^[A-Za-z\s]{3,50}$/)) {
+        isValid = false;
+        districtError.style.display = 'block';
+      } else {
+        districtError.style.display = 'none';
+      }
+
+      // Prevent form submission if not valid
+      if (!isValid) {
+        event.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
