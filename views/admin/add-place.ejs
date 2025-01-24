@@ -96,19 +96,22 @@
     <form id="placeForm" >
       <div class="form-group">
         <label for="place">Place</label>
-        <input type="text" id="place" name="place" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <input type="text" list="placeSuggestions" id="place" name="place" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <datalist id="placeSuggestions"></datalist>
         <div class="error-message" id="placeError">Please enter a valid place name (letters only, 3-50 characters).</div>
       </div>
 
       <div class="form-group">
         <label for="city">City</label>
-        <input type="text" id="city" name="city" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <input type="text" list="citySuggestions" id="city" name="city" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <datalist id="citySuggestions"></datalist>
         <div class="error-message" id="cityError">Please enter a valid city name (letters only, 3-50 characters).</div>
       </div>
 
       <div class="form-group">
         <label for="district">District</label>
-        <input type="text" id="district" name="district" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <input type="text" list="districtSuggestions" id="district" name="district" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <datalist id="districtSuggestions"></datalist>
         <div class="error-message" id="districtError">Please enter a valid district name (letters only, 3-50 characters).</div>
       </div>
 
@@ -117,8 +120,71 @@
       </div>
     </form>
   </div>
-
+  <script src="https://maps.gomaps.pro/maps/api/js?key=AlzaSy-D9zWCsyWZb4bxE0Fr4pX2VpZooPtfega&libraries=places"></script>
   <script>
+    const API_KEY = 'AlzaSy-D9zWCsyWZb4bxE0Fr4pX2VpZooPtfega'; // Replace with your key
+    const API_URL = 'https://maps.gomaps.pro/maps/api/place/autocomplete/json';
+  
+    async function getPlaceSuggestions(datalistId, query) {
+      try {
+        const response = await fetch(
+          `${API_URL}?key=${API_KEY}&input=${query}&components=country:in`
+        );
+        const data = await response.json();
+  
+        if (data.status === 'OK') {
+          const suggestions = data.predictions.map((prediction) => prediction.description);
+          updateSuggestionsList(datalistId, suggestions);
+        } else {
+          console.error('Error fetching suggestions:', data.error_message || data.status);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  
+    function updateSuggestionsList(datalistId, suggestions) {
+      const datalistElement = document.getElementById(datalistId);
+  
+      // Clear previous suggestions
+      datalistElement.innerHTML = '';
+  
+      // Add new suggestions
+      suggestions.forEach((suggestion) => {
+        const option = document.createElement('option');
+        option.value = suggestion;
+        datalistElement.appendChild(option);
+      });
+    }
+  
+    function debounce(func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+  
+    // Attach event listeners to input fields
+    document.getElementById('place').addEventListener(
+      'input',
+      debounce((event) => getPlaceSuggestions('placeSuggestions', event.target.value), 300)
+    );
+  
+    document.getElementById('city').addEventListener(
+      'input',
+      debounce((event) => getPlaceSuggestions('citySuggestions', event.target.value), 300)
+    );
+  
+    document.getElementById('district').addEventListener(
+      'input',
+      debounce((event) => getPlaceSuggestions('districtSuggestions', event.target.value), 300)
+    );
+  </script>
+  
+  
+  <script>
+    
     const form = document.getElementById('placeForm');
 
     form.addEventListener('submit', async function (event) {
