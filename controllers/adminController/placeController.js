@@ -22,6 +22,7 @@ const postAddPlace = async(req,res) => {
               ]
         })
         if(existingPlace){
+            console.log(existingPlace);
             return res.status(400).json({message:"Place and City combination already exists"})
         }
         const newPlace = new Place({
