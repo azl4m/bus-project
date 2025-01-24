@@ -92,6 +92,9 @@
 <body>
   <div class="form-container">
     <h2>Place Form</h2>
+    <% if (success) { %>
+      <p style="color: green;">Form submitted successfully!</p>
+    <% } %>
     <form id="placeForm" action="add-place" method="post">
       <div class="form-group">
         <label for="place">Place</label>

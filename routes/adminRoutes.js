@@ -9,7 +9,7 @@ router.get('/add-bus',busController.getAddBus)
 
 //place
 router.get('/add-place',placeController.getAddPlace)
-// router.post('/add-place',placeController.postAddPlace)
+router.post('/add-place',placeController.postAddPlace)
 
 //route
 router.get('/add-route',routeController.getAddRoute)
