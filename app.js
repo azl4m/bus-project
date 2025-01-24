@@ -5,7 +5,9 @@ const path = require("path")
 const userRoute = require('./routes/userRoutes')
 const adminRoutes = require("./routes/adminRoutes")
 const nocache = require("nocache")
+const db = require('./config/db')
 
+db()
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(nocache())
@@ -15,6 +17,7 @@ app.set("views",[path.join(__dirname,"views/user"),path.join(__dirname,"views/ad
 app.use(express.static(path.join(__dirname,"public")))
 
 const port = process.env.PORT
+
 app.listen(port,()=> console.log("server running "+port))
 
 app.use('/',userRoute)

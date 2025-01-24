@@ -20,7 +20,7 @@
 .nav-link::after {
     content: '';
     position: absolute;
-    bottom: -5px; /* Adjust position of underline */
+    bottom: -5px; 
     left: 50%;
     transform: translateX(-50%);
     width: 0;
