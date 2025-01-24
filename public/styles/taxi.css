@@ -24,6 +24,7 @@
 }
 .location-card:hover {
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+    border-bottom: 4px solid rgb(135, 206, 235);
 }
 .vehicle-icon {
     background-color: #e3f2fd;

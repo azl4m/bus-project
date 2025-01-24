@@ -1,16 +1,20 @@
+.navbar{
+    background-color: black;
+}
+
 .nav-link {
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-    color: #666;
+    color: #fefdfd;
     transition: color 0.3s;
     text-decoration: none;
     margin: 0 20px; /* Adds gap between links */
 }
 
 .nav-link:hover {
-    color: #333;
+    color: #ffed29;
 }
 
 .nav-link::after {
