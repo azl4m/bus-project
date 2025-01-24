@@ -14,5 +14,4 @@ const getAddPlace = async(req,res)=>{
 
 module.exports={
     getAddPlace,
-    postAddPlace
 }
