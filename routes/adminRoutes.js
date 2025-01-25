@@ -6,7 +6,7 @@ const router = express.Router()
 
 //bus
 router.get('/add-bus',busController.getAddBus)
-
+router.post('/add-bus',busController.postAddBus)
 //place
 router.get('/add-place',placeController.getAddPlace)
 router.post('/add-place',placeController.postAddPlace)
