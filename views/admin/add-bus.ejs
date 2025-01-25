@@ -63,7 +63,7 @@
           <h3>Route 1</h3>
           <div class="mb-3">
             <label for="routeId-1" class="form-label">Route:</label>
-            <select id="routeId-1" name="routes[0][routeId]" class="form-select">
+            <select id="routeId-1" name="routes[0][routeId]" class="add-bus-form-select">
               <% if(routeData && routeData.length > 0){ %>
                 <% for(let i=0; i < routeData.length; i++){ %>
                   <option value="<%= routeData[i]._id %>"><%= routeData[i].routeName %></option>
@@ -96,7 +96,6 @@
   </div>
 
   <script>
-    
     let routeCount = 1;
 
     function addRoute() {
@@ -108,7 +107,7 @@
         <h3>Route ${routeCount + 1}</h3>
         <div class="mb-3">
           <label for="routeId-${routeCount + 1}" class="form-label">Route:</label>
-          <select id="routeId-${routeCount + 1}" name="routes[${routeCount}][routeId]" class="form-select">
+          <select id="routeId-${routeCount + 1}" name="routes[${routeCount}][routeId]" class="add-bus-form-select">
             <% if(routeData && routeData.length > 0){ %>
               <% for(let i=0; i < routeData.length; i++){ %>
                 <option value="<%= routeData[i]._id %>"><%= routeData[i].routeName %></option>
@@ -124,8 +123,8 @@
           <div class="error-message" id="departureTimeError-${routeCount + 1}"></div>
         </div>
 
-        <button type="button" class="btn btn-outline-danger delete-route-btn" onclick="deleteRoute(this)">Delete Route</button>`
-      ;
+        <button type="button" class="btn btn-outline-danger delete-route-btn" onclick="deleteRoute(this)">Delete Route</button>
+      `;
 
       routesContainer.appendChild(newRoute);
       routeCount++;
@@ -138,65 +137,68 @@
 
     document.getElementById('busScheduleForm').addEventListener('submit', async (event) => {
       event.preventDefault();
-  
+
       let isValid = true;
-  
+
       // Validate Bus Name
-      const busNameInput = document.querySelector('.bus-name');
-      const busNameError = document.querySelector('.bus-name-error');
+      const busNameInput = document.getElementById('busNumber');
+      const busNameError = document.getElementById('busNumberError');
       if (!busNameInput.value.trim()) {
         busNameError.textContent = 'Bus name is required.';
         isValid = false;
       } else {
         busNameError.textContent = '';
       }
-  
+
       // Validate Routes
-      const routeEntries = document.querySelectorAll('.route-entry');
-      const formData = {
-        busName: busNameInput.value.trim(),
-        routes: [],
-      };
-  
+      const routesContainer = document.getElementById('routes-container');
+      const routeEntries = routesContainer.querySelectorAll('.route-entry');
+      const busRoute = document.querySelectorAll(".add-bus-form-select")
       routeEntries.forEach((routeEntry, index) => {
-        const routeSelect = routeEntry.querySelector('.route-select');
-        const departureTimeInput = routeEntry.querySelector('.departure-time');
-        const routeError = routeEntry.querySelector('.route-error');
-        const departureTimeError = routeEntry.querySelector('.departure-time-error');
-  
-        const routeData = {
-          routeId: routeSelect.value.trim(),
-          departureTime: departureTimeInput.value.trim(),
-        };
-  
-        // Validate each route
-        if (!routeData.routeId) {
+        const routeSelect = routeEntry.querySelector(`#routeId-${index + 1}`);
+        const departureTimeInput = routeEntry.querySelector(`#departureTime-${index + 1}`);
+        const routeError = routeEntry.querySelector(`#routeError-${index + 1}`);
+        const departureTimeError = routeEntry.querySelector(`#departureTimeError-${index + 1}`);
+
+        if (!routeSelect.value.trim()) {
           routeError.textContent = 'Route selection is required.';
           isValid = false;
         } else {
           routeError.textContent = '';
         }
-  
-        if (!routeData.departureTime) {
+
+        if (!departureTimeInput.value.trim()) {
           departureTimeError.textContent = 'Departure time is required.';
           isValid = false;
         } else {
           departureTimeError.textContent = '';
         }
-  
-        formData.routes.push(routeData);
       });
-  
+
       if (isValid) {
+        const formData = new FormData(document.getElementById('busScheduleForm'));
+        const data = {
+          busName:formData.get("busName"),
+          schedules:[]
+        }
+        busRoute.forEach((entry,index)=>{
+          const departureTime = document.getElementById(`departureTime-${index+1}`).value.trim()
+          data.schedules.push({
+            routeId:entry.value,
+            departureTime:departureTime
+          })
+        })
+        
+
         try {
           const response = await fetch('/admin/add-bus', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
+            body: JSON.stringify(data),
           });
-  
+
           if (response.ok) {
             alert('Bus schedule added successfully!');
           } else {
@@ -208,8 +210,6 @@
       }
     });
   </script>
-  
 </body>
-
 
 </html>
