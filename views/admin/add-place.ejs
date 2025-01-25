@@ -96,21 +96,21 @@
     <form id="placeForm" >
       <div class="form-group">
         <label for="place">Place</label>
-        <input type="text" list="placeSuggestions" id="place" name="place" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <input type="text" list="placeSuggestions" id="place" name="place" required minlength="3" maxlength="50" pattern="[A-Za-z\s/]+" />
         <datalist id="placeSuggestions"></datalist>
         <div class="error-message" id="placeError">Please enter a valid place name (letters only, 3-50 characters).</div>
       </div>
 
       <div class="form-group">
         <label for="city">City</label>
-        <input type="text" list="citySuggestions" id="city" name="city" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <input type="text" list="citySuggestions" id="city" name="city" required minlength="3" maxlength="50" pattern="[A-Za-z\s/]+" />
         <datalist id="citySuggestions"></datalist>
         <div class="error-message" id="cityError">Please enter a valid city name (letters only, 3-50 characters).</div>
       </div>
 
       <div class="form-group">
         <label for="district">District</label>
-        <input type="text" list="districtSuggestions" id="district" name="district" required minlength="3" maxlength="50" pattern="[A-Za-z\s]+" />
+        <input type="text" list="districtSuggestions" id="district" name="district" required minlength="3" maxlength="50" pattern="[A-Za-z\s/]+" />
         <datalist id="districtSuggestions"></datalist>
         <div class="error-message" id="districtError">Please enter a valid district name (letters only, 3-50 characters).</div>
       </div>
@@ -133,7 +133,9 @@
         const data = await response.json();
   
         if (data.status === 'OK') {
-          const suggestions = data.predictions.map((prediction) => prediction.description);
+          const suggestions = data.predictions.map((prediction) =>
+        prediction.description.split(',')[0].trim()
+      );
           updateSuggestionsList(datalistId, suggestions);
         } else {
           console.error('Error fetching suggestions:', data.error_message || data.status);
@@ -193,7 +195,7 @@
       // Validate Place
       const placeInput = document.getElementById('place');
       const placeError = document.getElementById('placeError');
-      if (!placeInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9])\1{2})[A-Za-z0-9]*$/)) {
+      if (!placeInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9/\s])\1{2})[A-Za-z0-9/\s]*$/)) {
         isValid = false;
         placeError.style.display = 'block';
       } else {
@@ -203,7 +205,7 @@
       // Validate City
       const cityInput = document.getElementById('city');
       const cityError = document.getElementById('cityError');
-      if (!cityInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9])\1{2})[A-Za-z0-9]*$/)) {
+      if (!cityInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9/\s])\1{2})[A-Za-z0-9/\s]*$/)) {
         isValid = false;
         cityError.style.display = 'block';
       } else {
@@ -213,7 +215,7 @@
       // Validate District
       const districtInput = document.getElementById('district');
       const districtError = document.getElementById('districtError');
-      if (!districtInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9])\1{2})[A-Za-z0-9]*$/)) {
+      if (!districtInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9/\s])\1{2})[A-Za-z0-9/\s]*$/)) {
         isValid = false;
         districtError.style.display = 'block';
       } else {
