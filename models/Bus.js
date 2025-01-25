@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const busSchema = new mongoose.Schema(
     {
-      busNumber: {
+      busName: {
         type: String,
         required: true,
         unique: true,
