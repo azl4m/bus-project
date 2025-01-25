@@ -222,7 +222,7 @@
         // Validate route name
         if (
           !routeName.match(
-            /^[A-Za-z](?!.*([A-Za-z0-9/\s])\1{2})[A-Za-z0-9/\s]*$/
+            /^[A-Za-z](?!.*([A-Za-z0-9/\s-])\1{2})[A-Za-z0-9/\s-]*(?<![-])$/  
           )
         ) {
           isValid = false;
@@ -266,7 +266,8 @@
   
           if (response.ok) {
             alert("Route added successfully!");
-            document.getElementById("routeForm").reset(); // Reset the form
+            window.location.reload()
+            // document.getElementById("routeForm").reset(); // Reset the form
           } else {
             const error = await response.json();
             alert(`Error: ${error.message}`);

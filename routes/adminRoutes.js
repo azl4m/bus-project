@@ -13,4 +13,5 @@ router.post('/add-place',placeController.postAddPlace)
 
 //route
 router.get('/add-route',routeController.getAddRoute)
+router.post('/add-route',routeController.postAddRoute)
 module.exports = router
