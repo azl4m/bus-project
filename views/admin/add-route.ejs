@@ -114,11 +114,11 @@
 <body>
   <div class="form-container">
     <h1>Add Route</h1>
-    <form action="/add-route" method="POST" id="routeForm">
+    <form  id="routeForm">
       <!-- Route Name -->
       <div class="form-group">
         <label for="routeName">Route Name:</label>
-        <input type="text" id="routeName" name="routeName" required>
+        <input type="text" id="routeName" name="routeName" required >
       </div>
 
       <!-- Stops Section -->
@@ -127,10 +127,12 @@
           <div class="form-group">
             <label for="placeId-1">Place:</label>
             <select id="placeId-1" name="stops[0][placeId]" required>
-              <option value="">Select Place</option>
-              <option value="place1">Place 1</option>
-              <option value="place2">Place 2</option>
-              <option value="place3">Place 3</option>
+              <% if(placeData && placeData.length > 0){ %>
+                <% for(let i=0;i<placeData.length;i++){ %>
+                  <option value="<%= placeData[i]._id %>"><%= placeData[i].place %>,<%= placeData[i].city %></option>
+                <% } %>
+                
+              <% } %>
             </select>
           </div>
           <div class="form-group">
@@ -160,10 +162,11 @@
         <div class="form-group">
           <label for="placeId-${stopCount + 1}">Place:</label>
           <select id="placeId-${stopCount + 1}" name="stops[${stopCount}][placeId]" required>
-            <option value="">Select Place</option>
-            <option value="place1">Place 1</option>
-            <option value="place2">Place 2</option>
-            <option value="place3">Place 3</option>
+            <% if(placeData && placeData.length > 0){ %>
+                <% for(let i=0;i<placeData.length;i++){ %>
+                  <option value="<%= placeData[i]._id %>"><%= placeData[i].place %>,<%= placeData[i].city %></option>
+                <% } %>
+              <% } %>
           </select>
         </div>
         <div class="form-group">
@@ -175,6 +178,12 @@
       stopsContainer.appendChild(newStop);
       stopCount++;
     }
+
+    document.addEventListener("DOMContentLoaded",()=>{
+      document.getElementById("routeForm").addEventListener("submit",async ()=>{
+
+      })
+    })
   </script>
 </body>
 </html>
