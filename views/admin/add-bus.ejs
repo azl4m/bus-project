@@ -49,12 +49,12 @@
 <body>
   <div class="container">
     <h1 class="text-center">Add Bus Schedule</h1>
-    <form action="/add-bus" method="POST" class="needs-validation" novalidate>
+    <form id="busScheduleForm">
       <!-- Bus Number -->
       <div class="mb-3">
-        <label for="busNumber" class="form-label">Bus Number:</label>
-        <input type="text" id="busNumber" name="busNumber" class="form-control" placeholder="Enter Bus Number" required>
-        <div class="invalid-feedback">Please enter the bus number.</div>
+        <label for="busNumber" class="form-label">Bus Name:</label>
+        <input type="text" id="busNumber" name="busName" class="form-control" placeholder="Enter Bus Name">
+        <div class="error-message" id="busNumberError"></div>
       </div>
 
       <!-- Routes Container -->
@@ -63,21 +63,23 @@
           <h3>Route 1</h3>
           <div class="mb-3">
             <label for="routeId-1" class="form-label">Route:</label>
-            <select id="routeId-1" name="routes[0][routeId]" class="form-select" required>
+            <select id="routeId-1" name="routes[0][routeId]" class="form-select">
               <% if(routeData && routeData.length > 0){ %>
                 <% for(let i=0; i < routeData.length; i++){ %>
                   <option value="<%= routeData[i]._id %>"><%= routeData[i].routeName %></option>
                 <% } %>
               <% } %>
             </select>
-            <div class="invalid-feedback">Please select a route.</div>
+            <div class="error-message" id="routeError-1"></div>
           </div>
 
           <div class="mb-3">
             <label for="departureTime-1" class="form-label">Departure Time:</label>
-            <input type="time" id="departureTime-1" name="routes[0][departureTime]" class="form-control" required>
-            <div class="invalid-feedback">Please select a departure time.</div>
+            <input type="time" id="departureTime-1" name="routes[0][departureTime]" class="form-control">
+            <div class="error-message" id="departureTimeError-1"></div>
           </div>
+
+          <button type="button" class="btn btn-outline-danger delete-route-btn" onclick="deleteRoute(this)">Delete Route</button>
         </div>
       </div>
 
@@ -93,11 +95,8 @@
     </form>
   </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
-    let routeCount = 1; // Initialize with 1 because the first route already exists
+    let routeCount = 1;
 
     function addRoute() {
       const routesContainer = document.getElementById('routes-container');
@@ -108,29 +107,98 @@
         <h3>Route ${routeCount + 1}</h3>
         <div class="mb-3">
           <label for="routeId-${routeCount + 1}" class="form-label">Route:</label>
-          <select id="routeId-${routeCount + 1}" name="routes[${routeCount}][routeId]" class="form-select" required>
+          <select id="routeId-${routeCount + 1}" name="routes[${routeCount}][routeId]" class="form-select">
             <% if(routeData && routeData.length > 0){ %>
               <% for(let i=0; i < routeData.length; i++){ %>
                 <option value="<%= routeData[i]._id %>"><%= routeData[i].routeName %></option>
               <% } %>
             <% } %>
           </select>
-          <div class="invalid-feedback">Please select a route.</div>
+          <div class="error-message" id="routeError-${routeCount + 1}"></div>
         </div>
 
         <div class="mb-3">
           <label for="departureTime-${routeCount + 1}" class="form-label">Departure Time:</label>
-          <input type="time" id="departureTime-${routeCount + 1}" name="routes[${routeCount}][departureTime]" class="form-control" required>
-          <div class="invalid-feedback">Please select a departure time.</div>
+          <input type="time" id="departureTime-${routeCount + 1}" name="routes[${routeCount}][departureTime]" class="form-control">
+          <div class="error-message" id="departureTimeError-${routeCount + 1}"></div>
         </div>
+
+        <button type="button" class="btn btn-outline-danger delete-route-btn" onclick="deleteRoute(this)">Delete Route</button>
       `;
 
       routesContainer.appendChild(newRoute);
-      routeCount++; // Increment route count for the next route
+      routeCount++;
     }
 
-    // Bootstrap form validation
-    
+    function deleteRoute(button) {
+      const routeEntry = button.closest('.route-entry');
+      routeEntry.remove();
+    }
+
+    document.getElementById('busScheduleForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      let isValid = true;
+
+      // Validate Bus Name
+      const busNameInput = document.getElementById('busNumber');
+      const busNameError = document.getElementById('busNumberError');
+      if (!busNameInput.value.trim()) {
+        busNameError.textContent = 'Bus name is required.';
+        isValid = false;
+      } else {
+        busNameError.textContent = '';
+      }
+
+      // Validate Routes
+      const routesContainer = document.getElementById('routes-container');
+      const routeEntries = routesContainer.querySelectorAll('.route-entry');
+      routeEntries.forEach((routeEntry, index) => {
+        const routeSelect = routeEntry.querySelector(`#routeId-${index + 1}`);
+        const departureTimeInput = routeEntry.querySelector(`#departureTime-${index + 1}`);
+        const routeError = routeEntry.querySelector(`#routeError-${index + 1}`);
+        const departureTimeError = routeEntry.querySelector(`#departureTimeError-${index + 1}`);
+
+        if (!routeSelect.value.trim()) {
+          routeError.textContent = 'Route selection is required.';
+          isValid = false;
+        } else {
+          routeError.textContent = '';
+        }
+
+        if (!departureTimeInput.value.trim()) {
+          departureTimeError.textContent = 'Departure time is required.';
+          isValid = false;
+        } else {
+          departureTimeError.textContent = '';
+        }
+      });
+
+      if (isValid) {
+        const formData = new FormData(document.getElementById('busScheduleForm'));
+        const formJSON = Object.fromEntries(formData);
+
+        try {
+          const response = await fetch('/admin/add-bus', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formJSON),
+          });
+
+          if (response.ok) {
+            alert('Bus schedule added successfully!');
+          } else {
+            alert('Failed to add bus schedule.');
+          }
+        } catch (error) {
+          console.error('Error submitting form:', error);
+        }
+      }
+    });
   </script>
 </body>
+
+
 </html>
