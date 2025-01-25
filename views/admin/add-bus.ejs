@@ -96,6 +96,46 @@
   </div>
 
   <script>
+    
+    let routeCount = 1;
+
+    function addRoute() {
+      const routesContainer = document.getElementById('routes-container');
+      const newRoute = document.createElement('div');
+      newRoute.classList.add('route-entry');
+
+      newRoute.innerHTML = `
+        <h3>Route ${routeCount + 1}</h3>
+        <div class="mb-3">
+          <label for="routeId-${routeCount + 1}" class="form-label">Route:</label>
+          <select id="routeId-${routeCount + 1}" name="routes[${routeCount}][routeId]" class="form-select">
+            <% if(routeData && routeData.length > 0){ %>
+              <% for(let i=0; i < routeData.length; i++){ %>
+                <option value="<%= routeData[i]._id %>"><%= routeData[i].routeName %></option>
+              <% } %>
+            <% } %>
+          </select>
+          <div class="error-message" id="routeError-${routeCount + 1}"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="departureTime-${routeCount + 1}" class="form-label">Departure Time:</label>
+          <input type="time" id="departureTime-${routeCount + 1}" name="routes[${routeCount}][departureTime]" class="form-control">
+          <div class="error-message" id="departureTimeError-${routeCount + 1}"></div>
+        </div>
+
+        <button type="button" class="btn btn-outline-danger delete-route-btn" onclick="deleteRoute(this)">Delete Route</button>`
+      ;
+
+      routesContainer.appendChild(newRoute);
+      routeCount++;
+    }
+
+    function deleteRoute(button) {
+      const routeEntry = button.closest('.route-entry');
+      routeEntry.remove();
+    }
+
     document.getElementById('busScheduleForm').addEventListener('submit', async (event) => {
       event.preventDefault();
   
