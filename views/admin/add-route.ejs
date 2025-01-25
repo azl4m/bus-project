@@ -118,7 +118,8 @@
       <!-- Route Name -->
       <div class="form-group">
         <label for="routeName">Route Name:</label>
-        <input type="text" id="routeName" name="routeName" required >
+        <input type="text" id="routeName" name="routeName" required minlength="3" maxlength="50"  >
+        <div id="route-name-error"></div>
       </div>
 
       <!-- Stops Section -->
@@ -126,18 +127,19 @@
         <div class="stop-entry">
           <div class="form-group">
             <label for="placeId-1">Place:</label>
-            <select id="placeId-1" name="stops[0][placeId]" required>
+            <select id="placeId-1" class="stops" name="stops[0][placeId]" required>
               <% if(placeData && placeData.length > 0){ %>
                 <% for(let i=0;i<placeData.length;i++){ %>
                   <option value="<%= placeData[i]._id %>"><%= placeData[i].place %>,<%= placeData[i].city %></option>
                 <% } %>
-                
               <% } %>
             </select>
+            <span class="error-message-2"></span>
           </div>
           <div class="form-group">
             <label for="delay-1">Delay (minutes):</label>
-            <input type="number" id="delay-1" name="stops[0][delay]" required>
+            <input type="number" class="delay" id="delay-1" class="delay" name="stops[0][delay]" required>
+            <span class="error-message-3" style="color: red;"></span>
           </div>
         </div>
       </div>
@@ -152,38 +154,130 @@
 
   <script>
     let stopCount = 1;
-
+  
     function addStop() {
       const stopsContainer = document.getElementById('stops-container');
       const newStop = document.createElement('div');
       newStop.classList.add('stop-entry');
-
+  
       newStop.innerHTML = `
         <div class="form-group">
           <label for="placeId-${stopCount + 1}">Place:</label>
-          <select id="placeId-${stopCount + 1}" name="stops[${stopCount}][placeId]" required>
+          <select id="placeId-${stopCount + 1}" class="stops" name="stops[${stopCount}][placeId]" required>
             <% if(placeData && placeData.length > 0){ %>
                 <% for(let i=0;i<placeData.length;i++){ %>
                   <option value="<%= placeData[i]._id %>"><%= placeData[i].place %>,<%= placeData[i].city %></option>
                 <% } %>
               <% } %>
           </select>
+          <span class="error-message-2"></span>
         </div>
         <div class="form-group">
           <label for="delay-${stopCount + 1}">Delay (minutes):</label>
-          <input type="number" id="delay-${stopCount + 1}" name="stops[${stopCount}][delay]" required>
+          <input type="number" class="delay" id="delay-${stopCount + 1}" name="stops[${stopCount}][delay]" required>
+          <span class="error-message-3" style="color: red;"></span>
         </div>
       `;
-
+  
       stopsContainer.appendChild(newStop);
       stopCount++;
     }
+  
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("routeForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+  
+        const routeName = document.getElementById("routeName").value.trim();
+        const stopSelects = document.querySelectorAll(".stops");
+        const routeNameError = document.getElementById("route-name-error");
+        const delayTime = document.querySelectorAll(".delay")
+  
+        let isValid = true;
+  
+        // Validate all stop selects
+        stopSelects.forEach((select) => {
+          const errorSpan = select.nextElementSibling;
+          if (select.value.trim() === "") {
+            errorSpan.textContent = "Choose an option.";
+            errorSpan.style.color = "red";
+            select.style.border = "2px solid red";
+            isValid = false;
+          } else {
+            errorSpan.textContent = "";
+            select.style.border = "";
+          }
+        });
 
-    document.addEventListener("DOMContentLoaded",()=>{
-      document.getElementById("routeForm").addEventListener("submit",async ()=>{
-
-      })
-    })
+        delayTime.forEach((delay) =>{
+          const spanError = delay.nextSibling;
+          if(delay.value < 0){
+            spanError.textContent = 'invalid time';
+            spanError.style.color = "red";
+            isValid = false
+          }else{
+            spanError.textContent = ''
+          }
+        })
+  
+        // Validate route name
+        if (
+          !routeName.match(
+            /^[A-Za-z](?!.*([A-Za-z0-9/\s])\1{2})[A-Za-z0-9/\s]*$/
+          )
+        ) {
+          isValid = false;
+          routeNameError.innerHTML = "Invalid route name.";
+          routeNameError.style.color = "red";
+        } else {
+          routeNameError.innerHTML = "";
+        }
+        
+        
+        if (!isValid) {
+          e.preventDefault()
+          return; // Prevent submission if the form is invalid
+        }
+  
+        // Prepare form data
+        const formData = new FormData(document.getElementById("routeForm"));
+  
+        const data = {
+          routeName: formData.get("routeName"),
+          stops: [],
+        };
+  
+        stopSelects.forEach((select, index) => {
+          const delay = document.querySelector(`#delay-${index + 1}`).value.trim();
+          data.stops.push({
+            placeId: select.value,
+            delay: delay,
+          });
+        });
+  
+        // Send data using fetch
+        try {
+          const response = await fetch("/admin/add-route", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+  
+          if (response.ok) {
+            alert("Route added successfully!");
+            document.getElementById("routeForm").reset(); // Reset the form
+          } else {
+            const error = await response.json();
+            alert(`Error: ${error.message}`);
+          }
+        } catch (err) {
+          console.error("Error submitting form:", err);
+          alert("Something went wrong. Please try again later.");
+        }
+      });
+    });
   </script>
+  
 </body>
 </html>
