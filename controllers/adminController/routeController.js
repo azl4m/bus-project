@@ -4,7 +4,7 @@ const Route = require('../../models/Route')
 
 const getAddRoute = async(req,res) => {
     try {
-        const places = await Place.find()
+        const places = await Place.find().sort({place:1})
         res.render('add-route',{placeData:places})
     } catch (error) {
         console.log(error);
@@ -14,10 +14,8 @@ const getAddRoute = async(req,res) => {
 const postAddRoute = async (req, res) => {
     try {
         console.log(req.body);
-
         const stops = req.body?.stops || [];
         const placeIds = stops.map(stop => stop.placeId);
-
         const uniquePlaceIds = new Set(placeIds);
         if (placeIds.length !== uniquePlaceIds.size) {
             return res.status(400).json({ message: "Duplicate placeId detected in stops array" });
