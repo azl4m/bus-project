@@ -10,15 +10,19 @@ const getAddBus = async(req,res)=>{
         console.log("error in add bus "+error.message)
     }
 }
-const postAddBus = async(req,res) => {
+const postAddBus = async (req, res) => {
     try {
-        console.log(req.body);
-        
+      const bus = new Bus({
+        busName: req.body?.busName,
+        schedules: req.body?.schedules,
+      });
+      console.log(bus); 
+      await bus.save();
+      return res.send("succesful");
     } catch (error) {
-        console.log(error);
-        
+      console.error(error.message);
     }
-}
+  };
 module.exports = {
     getAddBus,
     postAddBus
