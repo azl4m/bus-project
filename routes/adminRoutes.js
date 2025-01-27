@@ -10,7 +10,9 @@ router.post('/add-bus',busController.postAddBus)
 //place
 router.get('/add-place',placeController.getAddPlace)
 router.post('/add-place',placeController.postAddPlace)
-
+router.get("/edit-place",placeController.getAllPlaces)
+router.post("/edit-place/:id/delete",placeController.postDeletePlace)
+router.post("/edit-place/:id/edit",placeController.postEditPlace)
 //route
 router.get('/add-route',routeController.getAddRoute)
 router.post('/add-route',routeController.postAddRoute)

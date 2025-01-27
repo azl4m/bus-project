@@ -38,8 +38,69 @@ const postAddPlace = async(req,res) => {
     }
 }
 
+const getAllPlaces = async(req,res) => {
+    try {
+        const page = parseInt(req.query.page) || 1; // Default to page 1
+        const limit = parseInt(req.query.limit) || 5; // Default to 5 items per page
+        const skip = (page - 1) * limit;
+        const search = req.query.search || ""; // Search query
+    
+        // Filter by search term if provided
+        const searchFilter = {
+          $or: [
+            { place: { $regex: search, $options: "i" } }, // Case-insensitive
+            { city: { $regex: search, $options: "i" } },
+            { district: { $regex: search, $options: "i" } },
+          ],
+        };
+    
+        const totalPlaces = await Place.countDocuments(search ? searchFilter : {});
+        const places = await Place.find(search ? searchFilter : {})
+          .skip(skip)
+          .limit(limit);
+    
+        const totalPages = Math.ceil(totalPlaces / limit);
+    
+        res.render("edit-place", {
+          places,
+          currentPage: page,
+          totalPages,
+          search,
+        });
+      } catch (error) {
+        res.status(500).send("Error fetching places");
+      }
+}
+
+// Edit Place
+const postEditPlace = async(req, res) => {
+    try {
+      const { id } = req.params;
+      const { place, city, district } = req.body;
+  
+      await Place.findByIdAndUpdate(id, { place, city, district });
+      res.redirect("/admin/edit-place");
+    } catch (error) {
+      res.status(500).send("Error updating place");
+    }
+  }
+
+  // Delete Place
+const postDeletePlace = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      await Place.findByIdAndDelete(id);
+      res.redirect("/admin/edit-place");
+    } catch (error) {
+      res.status(500).send("Error deleting place");
+    }
+  }
 
 module.exports={
     getAddPlace,
-    postAddPlace
+    postAddPlace,
+    getAllPlaces,
+    postEditPlace,
+    postDeletePlace
 }
