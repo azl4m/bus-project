@@ -16,4 +16,5 @@ router.post("/edit-place/:id/edit",placeController.postEditPlace)
 //route
 router.get('/add-route',routeController.getAddRoute)
 router.post('/add-route',routeController.postAddRoute)
+router.get("/route",routeController.getAllRoutes)
 module.exports = router

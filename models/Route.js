@@ -17,6 +17,11 @@ const routeSchema = new mongoose.Schema({
         },
       },
     ],
+    isDeleted:{
+      type:Boolean,
+      default:false,
+      required:true
+    }
   }, { timestamps: true });
   
   module.exports = mongoose.model('Route', routeSchema);

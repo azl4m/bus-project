@@ -33,9 +33,41 @@ const postAddRoute = async (req, res) => {
         return res.status(400).json({ message: error.message });
     }
 };
+const getAllRoutes = async(req,res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = req.query.limit || 10;
+      const skip = (page-1)*limit
+      const search = req.query.search || ""
 
+      const searchFilter = {
+        $and:[
+            {isDeleted:false},
+            {
+                routeName:{$regex:search,$options:"i"}
+            }
+        ]
+      }
+
+      const totalRoutes = await Route.countDocuments(search?searchFilter:{});
+      const routes = await Route.find(search?searchFilter:{}.skip(skip).limit(limit)
+      )
+      const totalPages = Math.ceil(totalRoutes/limit)
+
+      res.render("routes",{
+        routeData:routes,
+        currentPage:page,
+        totalPages,
+        search
+      })
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
 
 module.exports={
     getAddRoute,
-    postAddRoute
+    postAddRoute,
+    getAllRoutes
 }

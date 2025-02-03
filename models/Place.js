@@ -12,6 +12,11 @@ const placeSchema = new mongoose.Schema({
   district:{
     type:String,
     required:true
+  },
+  isDeleted:{
+    type:Boolean,
+    default:false,
+    required:true
   }
 }, { timestamps: true });
 
