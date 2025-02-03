@@ -10,7 +10,7 @@
   <div class="container mt-4">
     <h1 class="mb-4">Places</h1>
     <!-- Search Form -->
-    <form action="/admin/edit-route" method="GET" class="mb-4">
+    <form action="/admin/route" method="GET" class="mb-4">
         <div class="row">
           <div class="col-md-8">
             <input
@@ -18,14 +18,14 @@
               name="search"
               class="form-control"
               placeholder="Search by Place, City, or District"
-              value=""
+              value="<%= search %>"
             />
           </div>
           <div class="col-md-2">
             <button type="submit" class="btn btn-primary w-100">Search</button>
           </div>
           <div class="col-md-2">
-            <a href="/admin/edit-place" class="btn btn-secondary w-100">Clear</a>
+            <a href="/admin/route" class="btn btn-secondary w-100">Clear</a>
           </div>
         </div>
       </form>
@@ -47,8 +47,8 @@
                 
                 <td>
                   <!-- Edit Button -->
-                  <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal1">Edit</button>
-      
+                   
+                <a href="/admin/edit-route/<%= route._id %>" class="btn btn-warning btn-sm" style="text-decoration: none; color: #fff;">Edit</a></button>
                   <!-- Delete Form -->
                   <form action="/admin/edit-place/1/delete" method="POST" class="d-inline">
                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -63,7 +63,7 @@
         <ul class="pagination justify-content-center">
           <% for (let i = 1; i <= totalPages; i++) { %>
             <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-              <a class="page-link" href="/admin/edit-place?page=<%= i %>"><%= i %></a>
+              <a class="page-link" href="/admin/route?page=<%= i %>"><%= i %></a>
             </li>
           <% } %>
         </ul>

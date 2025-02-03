@@ -39,7 +39,6 @@ const getAllRoutes = async(req,res) => {
       const limit = req.query.limit || 10;
       const skip = (page-1)*limit
       const search = req.query.search || ""
-
       const searchFilter = {
         $and:[
             {isDeleted:false},
@@ -50,8 +49,7 @@ const getAllRoutes = async(req,res) => {
       }
 
       const totalRoutes = await Route.countDocuments(search?searchFilter:{});
-      const routes = await Route.find(search?searchFilter:{}.skip(skip).limit(limit)
-      )
+      const routes = await Route.find(search?searchFilter:{}).skip(skip).limit(limit)
       const totalPages = Math.ceil(totalRoutes/limit)
 
       res.render("routes",{
@@ -66,8 +64,22 @@ const getAllRoutes = async(req,res) => {
     }
 }
 
+const getEditRoute = async(req,res)=>{
+    try {
+        console.log(req.params)
+        const {id} = req.params
+        const route = await Route.findById(id).populate("stops.placeId").exec()
+        console.log(route)
+        res.render("edit-route",{route})
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
 module.exports={
     getAddRoute,
     postAddRoute,
-    getAllRoutes
+    getAllRoutes,
+    getEditRoute
 }
