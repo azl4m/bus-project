@@ -50,8 +50,6 @@ const getAllRoutes = async (req, res) => {
       ],
     };
 
-
-
     const totalRoutes = await Route.countDocuments(search ? searchFilter : {});
     const routes = await Route.find(search ? searchFilter : {})
       .skip(skip)

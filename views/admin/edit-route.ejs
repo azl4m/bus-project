@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Route</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/your-fontawesome-key.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">Edit Route</h2>
+    <form id="editRouteForm" action="/edit/<%= route._id %>" method="POST">
+        <!-- Route Name -->
+        <div class="mb-3">
+            <label for="routeName" class="form-label">Route Name</label>
+            <input type="text" class="form-control" id="routeName" name="routeName" value="<%= route.routeName %>" required>
+        </div>
+
+        <!-- Stops List -->
+        <div class="mb-3">
+            <label class="form-label">Stops</label>
+            <ul class="list-group" id="stopsList">
+                <% route.stops.forEach((stop, index) => { %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><%= stop.placeId.place %> - <%= stop.placeId.city %>&nbsp; | Delay: <%= stop.delay %> min</span>
+                        <div>
+                            <button type="button" class="btn btn-sm btn-warning editStop" 
+                                data-place="<%= stop.placeId.place %>" 
+                                data-city="<%= stop.placeId.city %>" 
+                                data-bs-toggle="modal" 
+                                data-delay="<%= stop.delay %>"
+                                data-bs-target="#editStopModal">
+                                Edit
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger deleteStop" data-index="<%= index %>">
+                                Delete
+                            </button>
+                        </div>
+                    </li>
+                <% }); %>
+            </ul>
+        </div>
+
+        <!-- Add Stop Button -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStopModal">
+            Add Stop
+        </button>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success">Save Changes</button>
+    </form>
+</div>
+
+<!-- Add Stop Modal -->
+<div class="modal fade" id="addStopModal" tabindex="-1" aria-labelledby="addStopModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStopModalLabel">Add Stop</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addStopForm">
+                    <div class="mb-3">
+                        <label for="placeId" class="form-label">Place</label>
+                        <select class="form-select" id="placeId" required>
+                            <% places.forEach(place => { %>
+                                <option value="<%= place._id %>"><%= place.place %> - <%= place.city %></option>
+                            <% }); %>
+                        </select> 
+                    </div>
+                    <div class="mb-3">
+                        <label for="delayTime" class="form-label">Delay (minutes)</label>
+                        <input type="number" class="form-control" id="delayTime" required min="1">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="saveStop">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editStopModal" tabindex="-1" aria-labelledby="editStopModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStopModalLabel">Edit stop</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addStopForm">
+                    <div class="mb-3">
+                        <label for="editPlaceId" class="form-label">Place</label>
+                        <select class="form-select" id="EditplaceId" required>
+                            <% places.forEach(place => { %>
+                                <option value="<%= place._id %>"><%= place.place %> - <%= place.city %></option>
+                            <% }); %>
+                        </select> 
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDelayTime" class="form-label">Delay (minutes)</label>
+                        <input type="number" class="form-control" id="editDelayTime" required min="1">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="saveStop">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Frontend Validation
+document.getElementById('editRouteForm').addEventListener('submit', function(event) {
+    let routeName = document.getElementById('routeName').value.trim();
+    if (!routeName) {
+        event.preventDefault();
+        alert("Route Name is required!");
+    }
+});
+
+// Handle Add Stop Modal
+document.getElementById('saveStop').addEventListener('click', function() {
+    let placeId = document.getElementById('placeId').value;
+    let delayTime = document.getElementById('delayTime').value;
+    const places = JSON.parse('<%- JSON.stringify(places) %>');
+    const place =  places.find((place)=> place._id === placeId)
+    console.log(place)
+    if (!placeId || !delayTime || delayTime <= 0) {
+        alert("Please enter valid stop details.");
+        return;
+    }
+
+    // Add stop to the UI
+    let stopList = document.getElementById('stopsList');
+    let newListItem = document.createElement('li');
+    newListItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+    newListItem.innerHTML = `
+        <span>${place.place} ${place.city} - Delay: ${delayTime} min</span>
+        <div>
+            <button type="button" class="btn btn-sm btn-warning editStop">
+                Edit
+            </button>
+            <button type="button" class="btn btn-sm btn-danger deleteStop">
+                Delete
+            </button>
+        </div>
+    `;
+    stopList.appendChild(newListItem);
+
+    // Close modal
+    var modal = new bootstrap.Modal(document.getElementById('addStopModal'));
+    modal.hide();
+});
+
+// Handle Delete Stop
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('deleteStop')) {
+        event.target.closest('li').remove();
+    }
+});
+
+// Handle Edit Stop
+document.addEventListener("DOMContentLoaded",()=>{
+    const editButtons = document.querySelectorAll(".editStop")
+
+    editButtons.forEach((button)=>{
+        button.addEventListener("click",function (){
+            const place = this.getAttribute("data-place");
+            const city = this.getAttribute("data-city")
+            const delay = this.getAttribute("data-delay")
+            console.log(place)
+            console.log(city)
+            console.log(delay)
+            console.log("edit stop event")
+        })
+    })
+})
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
