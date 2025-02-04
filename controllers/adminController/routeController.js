@@ -66,12 +66,13 @@ const getAllRoutes = async(req,res) => {
 
 const getEditRoute = async(req,res)=>{
     try {
-        console.log(req.params)
+        
         const {id} = req.params
         const route = await Route.findById(id).populate("stops.placeId").exec()
-        console.log(route)
-        res.render("edit-route",{route})
+        const places = await Place.find()
+        res.render("edit-route",{route,places})
     } catch (error) {
+        console.log("error in edit route")
         console.log(error.message)
     }
 }
