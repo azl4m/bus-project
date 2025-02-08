@@ -18,4 +18,5 @@ router.get('/add-route',routeController.getAddRoute)
 router.post('/add-route',routeController.postAddRoute)
 router.get("/route",routeController.getAllRoutes)
 router.get("/edit-route/:id",routeController.getEditRoute)
+router.post('/edit-route',routeController.postEditRoute)
 module.exports = router

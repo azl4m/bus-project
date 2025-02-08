@@ -13,7 +13,7 @@ const getAddRoute = async (req, res) => {
 
 const postAddRoute = async (req, res) => {
   try {
-    console.log(req.body);
+    
     const stops = req.body?.stops || [];
     const placeIds = stops.map((stop) => stop.placeId);
     const uniquePlaceIds = new Set(placeIds);
@@ -80,9 +80,21 @@ const getEditRoute = async (req, res) => {
   }
 };
 
+const postEditRoute = async(req,res)=>{
+  try {
+    console.log("inside fetch")
+    console.log(req.body)
+    res.status(200).json({message:"route edited"})
+  } catch (error) {
+    console.log("error in post Edit Route ")
+    res.status(400).json({message:"route edited"})
+  }
+}
+
 module.exports = {
   getAddRoute,
   postAddRoute,
   getAllRoutes,
   getEditRoute,
+  postEditRoute
 };
