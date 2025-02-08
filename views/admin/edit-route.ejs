@@ -81,6 +81,7 @@
     </div>
 </div>
 
+<!-- edit modal -->
 <div class="modal fade" id="editStopModal" tabindex="-1" aria-labelledby="editStopModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -102,7 +103,7 @@
                         <label for="editDelayTime" class="form-label">Delay (minutes)</label>
                         <input type="number" class="form-control" id="editDelayTime" required min="1">
                     </div>
-                    <button type="button" class="btn btn-primary" id="saveStop">Add</button>
+                    <button type="button" class="btn btn-primary" id="saveEdiStop">Add</button>
                 </form>
             </div>
         </div>
@@ -110,6 +111,7 @@
 </div>
 
 <script>
+
 // Frontend Validation
 document.getElementById('editRouteForm').addEventListener('submit', function(event) {
     let routeName = document.getElementById('routeName').value.trim();
@@ -149,8 +151,14 @@ document.getElementById('saveStop').addEventListener('click', function() {
     stopList.appendChild(newListItem);
 
     // Close modal
-    var modal = new bootstrap.Modal(document.getElementById('addStopModal'));
-    modal.hide();
+    const addModalElement = document.getElementById("addStopModal");
+    const addModal = bootstrap.Modal.getInstance(addModalElement); 
+
+        
+    if (addModal) {
+        addModal.hide(); // Hide the modal properly
+    }
+    
 });
 
 // Handle Delete Stop
@@ -162,19 +170,108 @@ document.addEventListener('click', function(event) {
 
 // Handle Edit Stop
 document.addEventListener("DOMContentLoaded",()=>{
+    let currentStopElement = null;
+    const saveButton = document.getElementById("saveEdiStop");
     const editButtons = document.querySelectorAll(".editStop")
+    const placeSelect = document.getElementById("EditplaceId");
+    const delayInput = document.getElementById("editDelayTime");
 
     editButtons.forEach((button)=>{
         button.addEventListener("click",function (){
-            const place = this.getAttribute("data-place");
-            const city = this.getAttribute("data-city")
-            const delay = this.getAttribute("data-delay")
-            console.log(place)
-            console.log(city)
-            console.log(delay)
-            console.log("edit stop event")
+              // Get values from the clicked button's data attributes
+            const selectedPlace = this.getAttribute("data-place");
+            const selectedCity = this.getAttribute("data-city");
+            const selectedDelay = this.getAttribute("data-delay");
+            currentStopElement = this.closest("li");
+            // console.log(selectedCity)
+            // console.log(selectedPlace)
+            // console.log(selectedDelay)
+
+            // Get the select element and input field inside the modal
+            
+
+            // Set the correct option in the select tag
+            for (let option of placeSelect.options) {
+                if (option.textContent.includes(selectedPlace) && option.textContent.includes(selectedCity)) {
+                    option.selected = true;
+                    break;
+                }
+            }
+
+            // Set the delay input field
+            delayInput.value = selectedDelay;
         })
     })
+
+    saveButton.addEventListener("click", () => {
+        if (!currentStopElement) return; // Ensure a stop is selected
+
+        // Get new values
+        const newPlace = placeSelect.options[placeSelect.selectedIndex].textContent;
+        const newPlaceId = placeSelect.value;
+        console.log(newPlaceId)
+        const newDelay = delayInput.value;
+
+        // Update the stop's text content
+        currentStopElement.querySelector("span").textContent = `${newPlace} | Delay: ${newDelay} min`;
+
+        // Close the modal (Bootstrap)
+        const editModalElement = document.getElementById("editStopModal");
+        const editModal = bootstrap.Modal.getInstance(editModalElement); 
+
+        
+        if (editModal) {
+            editModal.hide(); // Hide the modal properly
+        }
+    });
+
+    //formsubmition
+    document.getElementById("editRouteForm").addEventListener("submit", async function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        console.log("inside form submisiion fech")
+        const routeId = "<%= route._id %>"; // Get the route ID from EJS
+        const routeName = document.getElementById("routeName").value;
+
+        // Collect stops dynamically
+        const stops = [];
+        document.querySelectorAll("#stopsList li").forEach((li) => {
+            const stopText = li.querySelector("span").textContent;
+            const [place, delayText] = stopText.split(" | Delay: ");
+            const delay = parseInt(delayText.replace(" min", ""), 10);
+
+            // Find placeId based on text (requires mapping if needed)
+            const placeId = Array.from(document.querySelectorAll("#EditplaceId option")).find(
+                (opt) => opt.textContent.includes(place.trim())
+            )?.value || "";
+
+            stops.push({ placeId, delay });
+        });
+
+        // Prepare data
+        const data = { routeName, stops };
+
+        console.log(data)
+        // Send data to the backend using fetch
+        try {
+            const response = await fetch(`/admin/edit-route`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            console.log("after fetch")
+            if (response.ok) {
+                alert("Route updated successfully!");
+                //location.reload(); // Refresh to reflect changes
+            } else {
+                alert("Failed to update route.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred.");
+        }
+    });
 })
 
 </script>
