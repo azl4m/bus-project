@@ -21,7 +21,8 @@ const port = process.env.PORT
 app.listen(port,()=> console.log("server running "+port))
 
 app.use('/',userRoute)
-app.use('/admin',adminRoutes)
+app.use('/admin'
+,adminRoutes)
 
 
 
