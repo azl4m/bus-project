@@ -112,84 +112,23 @@
 
 <script>
 
-// Frontend Validation
-document.getElementById('editRouteForm').addEventListener('submit', function(event) {
-    let routeName = document.getElementById('routeName').value.trim();
-    if (!routeName) {
-        event.preventDefault();
-        alert("Route Name is required!");
-    }
-});
 
-// Handle Add Stop Modal
-document.getElementById('saveStop').addEventListener('click', function() {
-    let placeId = document.getElementById('placeId').value;
-    let delayTime = document.getElementById('delayTime').value;
-    const places = JSON.parse('<%- JSON.stringify(places) %>');
-    const place =  places.find((place)=> place._id === placeId)
-    console.log(place)
-    if (!placeId || !delayTime || delayTime <= 0) {
-        alert("Please enter valid stop details.");
-        return;
-    }
-
-    // Add stop to the UI
-    let stopList = document.getElementById('stopsList');
-    let newListItem = document.createElement('li');
-    newListItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
-    newListItem.innerHTML = `
-        <span>${place.place} ${place.city} - Delay: ${delayTime} min</span>
-        <div>
-            <button type="button" class="btn btn-sm btn-warning editStop">
-                Edit
-            </button>
-            <button type="button" class="btn btn-sm btn-danger deleteStop">
-                Delete
-            </button>
-        </div>
-    `;
-    stopList.appendChild(newListItem);
-
-    // Close modal
-    const addModalElement = document.getElementById("addStopModal");
-    const addModal = bootstrap.Modal.getInstance(addModalElement); 
-
-        
-    if (addModal) {
-        addModal.hide(); // Hide the modal properly
-    }
-    
-});
-
-// Handle Delete Stop
-document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('deleteStop')) {
-        event.target.closest('li').remove();
-    }
-});
-
-// Handle Edit Stop
 document.addEventListener("DOMContentLoaded",()=>{
+
     let currentStopElement = null;
     const saveButton = document.getElementById("saveEdiStop");
     const editButtons = document.querySelectorAll(".editStop")
     const placeSelect = document.getElementById("EditplaceId");
     const delayInput = document.getElementById("editDelayTime");
 
-    editButtons.forEach((button)=>{
-        button.addEventListener("click",function (){
-              // Get values from the clicked button's data attributes
-            const selectedPlace = this.getAttribute("data-place");
-            const selectedCity = this.getAttribute("data-city");
-            const selectedDelay = this.getAttribute("data-delay");
-            currentStopElement = this.closest("li");
-            // console.log(selectedCity)
-            // console.log(selectedPlace)
-            // console.log(selectedDelay)
-
-            // Get the select element and input field inside the modal
-            
-
+    // Handle Edit Stop
+    document.getElementById("stopsList").addEventListener("click", function (event) {
+        if (event.target.classList.contains("editStop")) {
+            // Get values from the clicked button's data attributes
+            const selectedPlace = event.target.getAttribute("data-place");
+            const selectedCity = event.target.getAttribute("data-city");
+            const selectedDelay = event.target.getAttribute("data-delay");
+            currentStopElement = event.target.closest("li")
             // Set the correct option in the select tag
             for (let option of placeSelect.options) {
                 if (option.textContent.includes(selectedPlace) && option.textContent.includes(selectedCity)) {
@@ -200,10 +139,11 @@ document.addEventListener("DOMContentLoaded",()=>{
 
             // Set the delay input field
             delayInput.value = selectedDelay;
-        })
-    })
+        }
+    });
 
     saveButton.addEventListener("click", () => {
+        console.log("inside save edit")
         if (!currentStopElement) return; // Ensure a stop is selected
 
         // Get new values
@@ -225,19 +165,80 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     });
 
+    // Handle Add Stop Modal
+    document.getElementById('saveStop').addEventListener('click', function() {
+        let placeId = document.getElementById('placeId').value;
+        let delayTime = document.getElementById('delayTime').value;
+        const places = JSON.parse('<%- JSON.stringify(places) %>');
+        const place =  places.find((place)=> place._id === placeId)
+        console.log(place)
+        if (!placeId || !delayTime || delayTime <= 0) {
+            alert("Please enter valid stop details.");
+            return;
+        }
+
+        // Add stop to the UI
+        let stopList = document.getElementById('stopsList');
+        let newListItem = document.createElement('li');
+        newListItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+        newListItem.innerHTML = `
+            <span>${place.place} - ${place.city} | Delay: ${delayTime} min</span>
+            <div>
+                <button type="button" class="btn btn-sm btn-warning editStop" 
+                    data-bs-target="#editStopModal" 
+                    data-bs-toggle="modal"
+                    data-place="${place.place}" 
+                    data-city="${place.city}" 
+                    data-delay="${delayTime}"
+                                
+                >
+                    Edit
+                </button>
+                <button type="button" class="btn btn-sm btn-danger deleteStop">
+                    Delete
+                </button>
+            </div>
+        `;
+        stopList.appendChild(newListItem);
+
+        // Close modal
+        const addModalElement = document.getElementById("addStopModal");
+        const addModal = bootstrap.Modal.getInstance(addModalElement); 
+
+            
+        if (addModal) {
+            addModal.hide(); // Hide the modal properly
+        }
+        
+    });
+
+    // Handle Delete Stop
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('deleteStop')) {
+            event.target.closest('li').remove();
+        }
+    });
+
     //formsubmition
     document.getElementById("editRouteForm").addEventListener("submit", async function (event) {
         event.preventDefault(); // Prevent default form submission
-
+        // Frontend Validation
         console.log("inside form submisiion fech")
         const routeId = "<%= route._id %>"; // Get the route ID from EJS
         const routeName = document.getElementById("routeName").value;
+
+        if (!routeName.trim()) {
+            event.preventDefault();
+            alert("Route Name is required!");
+        }
 
         // Collect stops dynamically
         const stops = [];
         document.querySelectorAll("#stopsList li").forEach((li) => {
             const stopText = li.querySelector("span").textContent;
+            console.log(stopText)
             const [place, delayText] = stopText.split(" | Delay: ");
+            console.log(delayText)
             const delay = parseInt(delayText.replace(" min", ""), 10);
 
             // Find placeId based on text (requires mapping if needed)
@@ -251,7 +252,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         // Prepare data
         const data = { routeName, stops };
 
-        console.log(data)
+        
         // Send data to the backend using fetch
         try {
             const response = await fetch(`/admin/edit-route`, {
