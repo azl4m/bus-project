@@ -3,8 +3,7 @@ const busSchema = new mongoose.Schema(
     {
       busName: {
         type: String,
-        required: true,
-        unique: true,
+        required: true
       },
       schedules: [
         {
