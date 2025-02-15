@@ -120,6 +120,8 @@ document.addEventListener("DOMContentLoaded",()=>{
     const editButtons = document.querySelectorAll(".editStop")
     const placeSelect = document.getElementById("EditplaceId");
     const delayInput = document.getElementById("editDelayTime");
+    const routeId = "<%= route._id %>"
+    console.log(routeId)
 
     // Handle Edit Stop
     document.getElementById("stopsList").addEventListener("click", function (event) {
@@ -250,7 +252,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         });
 
         // Prepare data
-        const data = { routeName, stops };
+        const data = { routeName, stops,routeId };
 
         
         // Send data to the backend using fetch
@@ -264,7 +266,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             console.log("after fetch")
             if (response.ok) {
                 alert("Route updated successfully!");
-                //location.reload(); // Refresh to reflect changes
+                location.reload(); // Refresh to reflect changes
             } else {
                 alert("Failed to update route.");
             }
