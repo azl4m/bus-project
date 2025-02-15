@@ -82,8 +82,19 @@ const getEditRoute = async (req, res) => {
 
 const postEditRoute = async(req,res)=>{
   try {
-    console.log("inside fetch")
-    console.log(req.body)
+    
+    const id = req.body?.routeId
+    const stop = req.body?.stops || []
+    const routName = req.body?.routeName
+    const placeIds = stop.map((stop) => stop.placeId);
+    const uniquePlaceIds = new Set(placeIds);
+    if (placeIds.length !== uniquePlaceIds.size) {
+      return res
+        .status(400)
+        .json({ message: "Duplicate placeId detected in stops array" });
+    }
+    await Route.findByIdAndUpdate(id,{$set:{routeName:routName,stops:stop}})
+    
     res.status(200).json({message:"route edited"})
   } catch (error) {
     console.log("error in post Edit Route ")
