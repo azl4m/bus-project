@@ -8,6 +8,8 @@ const router = express.Router()
 router.get('/add-bus',busController.getAddBus)
 router.post('/add-bus',busController.postAddBus)
 router.get("/edit-buslist",busController.getEditBusList)
+router.get("/edit-bus",busController.getEditBus)
+router.post("/update-bus",busController.postEditBus)
 //place
 router.get('/add-place',placeController.getAddPlace)
 router.post('/add-place',placeController.postAddPlace)

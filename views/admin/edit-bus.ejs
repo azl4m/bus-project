@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Bus</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Edit Bus: <span id="busNameDisplay"><%= bus.busName %></span></h2>
+
+        <!-- Edit Bus Form -->
+        <form id="editBusForm" method="POST" action="/admin/update-bus?id=<%= bus._id %>">
+            <div class="mb-3">
+                <label for="busName" class="form-label fw-bold">Bus Name</label>
+                <input type="text" class="form-control" id="busName" name="busName" value="<%= bus.busName %>" required>
+            </div>
+
+            <h5 class="fw-bold mt-4">Schedules</h5>
+            <div id="scheduleContainer">
+                <% bus.schedules.forEach((schedule, index) => { %>
+                    <div class="border rounded p-3 mb-3 schedule-item">
+                        <h6 class="text-primary">Schedule <%= index + 1 %></h6>
+
+                        <label class="form-label">Route</label>
+                        <select class="form-control route-select" name="schedules[<%= index %>][routeId]" required>
+                            <% availableRoutes.forEach(route => { %>
+                                <option value="<%= route._id %>" 
+                                    <%= route._id.equals(schedule.routeId._id) ? 'selected' : '' %>>
+                                    <%= route.routeName %>
+                                </option>
+                            <% }); %>
+                        </select>
+
+                        <label class="form-label mt-2">Departure Time</label>
+                        <input type="time" class="form-control" name="schedules[<%= index %>][departureTime]" value="<%= schedule.departureTime %>" required>
+
+                        <button type="button" class="btn btn-danger btn-sm remove-schedule mt-2">Remove</button>
+                    </div>
+                <% }); %>
+            </div>
+
+            <!-- Add Schedule Button -->
+            <button type="button" id="addScheduleBtn" class="btn btn-success w-100 mt-3">+ Add Schedule</button>
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">Save Changes</button>
+        </form>
+
+    </div>
+    <script>        
+    document.addEventListener("DOMContentLoaded", function () {
+        const availableRoutes = <%- JSON.stringify(availableRoutes) %>;
+    const scheduleContainer = document.getElementById("scheduleContainer");
+    const addScheduleBtn = document.getElementById("addScheduleBtn");
+    addScheduleBtn.addEventListener("click", function () {
+        const index = document.querySelectorAll(".schedule-item").length;
+        const newSchedule = document.createElement("div");   
+        newSchedule.classList.add("border", "rounded", "p-3", "mb-3", "schedule-item");
+        // Generate route options dynamically using JS
+        const routeOptions = availableRoutes.map(route => `<option value="${route._id}">${route.routeName}</option>`).join("");
+        newSchedule.innerHTML = `
+            <h6 class="text-primary">Schedule ${index + 1}</h6>
+            <label class="form-label">Route</label>
+            <select class="form-control route-select" name="schedules[${index}][routeId]" required>
+                ${routeOptions}
+            </select>
+            <label class="form-label mt-2">Departure Time</label>
+            <input type="time" class="form-control" name="schedules[${index}][departureTime]" required>
+            <button type="button" class="btn btn-danger btn-sm remove-schedule mt-2">Remove</button>
+        `;
+
+        scheduleContainer.appendChild(newSchedule);
+        attachRemoveEvent();
+    });
+
+    function attachRemoveEvent() {
+        document.querySelectorAll(".remove-schedule").forEach(button => {
+            button.addEventListener("click", function () {
+                this.closest(".schedule-item").remove();
+            });
+        });
+    }
+
+    attachRemoveEvent();
+});
+
+    </script>
+
+</body>
+</html>
