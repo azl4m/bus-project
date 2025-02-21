@@ -7,7 +7,7 @@ const busSearch = async(req,res)=>{
 }
 const resultBus = async(req,res)=>{
     try {
-        res.render("busResult")
+        res.render("bus-result")
     } catch (error) {
         console.log("error in bus result "+error.message)
     }
