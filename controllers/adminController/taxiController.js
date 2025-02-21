@@ -13,6 +13,7 @@ const getAddTaxi =async (req,res)=>{
 const postAddTaxi = async (req,res)=>{
     try {
         console.log(req.body)
+        res.send("tqaxi added")
     } catch (error) {
         console.log("error in post add taxi "+error.message)
     }
