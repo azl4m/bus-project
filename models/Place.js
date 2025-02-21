@@ -1,23 +1,39 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const placeSchema = new mongoose.Schema({
-  place: {
-    type: String,
-    required: true,
+const placeSchema = new mongoose.Schema(
+  {
+    place: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    district: {
+      type: String,
+      required: true,
+      default:"Kozhikode"
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        required: true,
+      },
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  city: {
-    type: String,
-    required: true,
-  },
-  district:{
-    type:String,
-    required:true
-  },
-  isDeleted:{
-    type:Boolean,
-    default:false,
-    required:true
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('Place', placeSchema);
+placeSchema.index({ location: "2dsphere" }); // Enable geospatial queries
+
+module.exports = mongoose.model("Place", placeSchema);

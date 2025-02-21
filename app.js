@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname,"public")))
 
 const port = process.env.PORT
 
-app.listen(port,()=> console.log("server running "+port))
+app.listen(port,()=> console.log("server running http://localhost:"+port))
 
 app.use('/',userRoute)
 app.use('/admin'

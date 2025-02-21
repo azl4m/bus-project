@@ -80,6 +80,14 @@
                       <label for="district" class="form-label">District</label>
                       <input type="text" class="form-control" name="district" value="<%= place.district %>" required>
                     </div>
+                    <div class="mb-3">
+                      <label for="latitude" class="form-label">Latitude</label>
+                      <input type="text" class="form-control" name="latitude" value="<%= place?.location?.coordinates[1] %>" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="longitude" class="form-label">Longitude</label>
+                      <input type="text" class="form-control" name="longitude" value="<%= place?.location?.coordinates[0] %>" required>
+                    </div>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

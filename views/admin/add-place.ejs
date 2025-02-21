@@ -1,250 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Place Form</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background-color: #f4f4f4;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Place</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f4f4f4;
+      }
 
-    .form-container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
-      width: 100%;
-    }
-
-    .form-container h2 {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 16px;
-    }
-
-    .form-group input:focus {
-      border-color: #007BFF;
-      outline: none;
-    }
-
-    .error-message {
-      color: red;
-      font-size: 14px;
-      margin-top: 5px;
-      display: none;
-    }
-
-    .form-actions {
-      text-align: center;
-    }
-
-    .form-actions button {
-      padding: 10px 20px;
-      font-size: 16px;
-      color: #fff;
-      background: #007BFF;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .form-actions button:hover {
-      background: #0056b3;
-    }
-
-    @media (max-width: 480px) {
       .form-container {
-        padding: 15px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 100%;
+      }
+
+      .form-container h2 {
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        font-weight: bold;
+        display: block;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+
+      .form-actions {
+        text-align: center;
       }
 
       .form-actions button {
-        width: 100%;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="form-container">
-    <h2>Place Form</h2>
-    
-    <form id="placeForm" >
-      <div class="form-group">
-        <label for="place">Place</label>
-        <input type="text" list="placeSuggestions" id="place" name="place" required minlength="3" maxlength="50" pattern="[A-Za-z\s/]+" />
-        <datalist id="placeSuggestions"></datalist>
-        <div class="error-message" id="placeError">Please enter a valid place name (letters only, 3-50 characters).</div>
-      </div>
-
-      <div class="form-group">
-        <label for="city">City</label>
-        <input type="text" list="citySuggestions" id="city" name="city" required minlength="3" maxlength="50" pattern="[A-Za-z\s/]+" />
-        <datalist id="citySuggestions"></datalist>
-        <div class="error-message" id="cityError">Please enter a valid city name (letters only, 3-50 characters).</div>
-      </div>
-
-      <div class="form-group">
-        <label for="district">District</label>
-        <input type="text" list="districtSuggestions" id="district" name="district" required minlength="3" maxlength="50" pattern="[A-Za-z\s/]+" />
-        <datalist id="districtSuggestions"></datalist>
-        <div class="error-message" id="districtError">Please enter a valid district name (letters only, 3-50 characters).</div>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit">Submit</button>
-      </div>
-    </form>
-  </div>
-  <script src="https://maps.gomaps.pro/maps/api/js?key=AlzaSy-D9zWCsyWZb4bxE0Fr4pX2VpZooPtfega&libraries=places"></script>
-  <script>
-    const API_KEY = 'AlzaSy-D9zWCsyWZb4bxE0Fr4pX2VpZooPtfega'; // Replace with your key
-    const API_URL = 'https://maps.gomaps.pro/maps/api/place/autocomplete/json';
-  
-    async function getPlaceSuggestions(datalistId, query) {
-      try {
-        const response = await fetch(
-          `${API_URL}?key=${API_KEY}&input=${query}&components=country:in`
-        );
-        const data = await response.json();
-  
-        if (data.status === 'OK') {
-          const suggestions = data.predictions.map((prediction) =>
-        prediction.description.split(',')[0].trim()
-      );
-          updateSuggestionsList(datalistId, suggestions);
-        } else {
-          console.error('Error fetching suggestions:', data.error_message || data.status);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }
-  
-    function updateSuggestionsList(datalistId, suggestions) {
-      const datalistElement = document.getElementById(datalistId);
-  
-      // Clear previous suggestions
-      datalistElement.innerHTML = '';
-  
-      // Add new suggestions
-      suggestions.forEach((suggestion) => {
-        const option = document.createElement('option');
-        option.value = suggestion;
-        datalistElement.appendChild(option);
-      });
-    }
-  
-    function debounce(func, wait) {
-      let timeout;
-      return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-      };
-    }
-  
-    // Attach event listeners to input fields
-    document.getElementById('place').addEventListener(
-      'input',
-      debounce((event) => getPlaceSuggestions('placeSuggestions', event.target.value), 300)
-    );
-  
-    document.getElementById('city').addEventListener(
-      'input',
-      debounce((event) => getPlaceSuggestions('citySuggestions', event.target.value), 300)
-    );
-  
-    document.getElementById('district').addEventListener(
-      'input',
-      debounce((event) => getPlaceSuggestions('districtSuggestions', event.target.value), 300)
-    );
-  </script>
-  
-  
-  <script>
-    
-    const form = document.getElementById('placeForm');
-
-    form.addEventListener('submit', async function (event) {
-      let isValid = true;
-
-      // Validate Place
-      const placeInput = document.getElementById('place');
-      const placeError = document.getElementById('placeError');
-      if (!placeInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9/\s])\1{2})[A-Za-z0-9/\s]*$/)) {
-        isValid = false;
-        placeError.style.display = 'block';
-      } else {
-        placeError.style.display = 'none';
+        padding: 10px 20px;
+        font-size: 16px;
+        color: #fff;
+        background: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
       }
 
-      // Validate City
-      const cityInput = document.getElementById('city');
-      const cityError = document.getElementById('cityError');
-      if (!cityInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9/\s])\1{2})[A-Za-z0-9/\s]*$/)) {
-        isValid = false;
-        cityError.style.display = 'block';
-      } else {
-        cityError.style.display = 'none';
+      .form-actions button:hover {
+        background: #0056b3;
       }
 
-      // Validate District
-      const districtInput = document.getElementById('district');
-      const districtError = document.getElementById('districtError');
-      if (!districtInput.value.match(/^[A-Za-z](?!.*([A-Za-z0-9/\s])\1{2})[A-Za-z0-9/\s]*$/)) {
-        isValid = false;
-        districtError.style.display = 'block';
-      } else {
-        districtError.style.display = 'none';
+      #map {
+        height: 250px;
+        border-radius: 8px;
+        margin-top: 10px;
       }
 
-      // Prevent form submission if not valid
-      if (!isValid) {
-        event.preventDefault();
-      }else{
-        event.preventDefault();
-        const response = await fetch("/admin/add-place",{
-            method:"POST",
-            body:JSON.stringify({
-                place : placeInput.value,
-                city:cityInput.value,
-                district:districtInput.value
-            }),
-            headers:{
-                'Content-Type': 'application/json',
-            }
-        })
+      .suggestions {
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        max-height: 150px;
+        overflow-y: auto;
+        width: 95%;
+        z-index: 1000;
+        display: none;
+      }
+
+      .suggestions div {
+        padding: 8px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+      }
+
+      .suggestions div:hover {
+        background: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>Add Place</h2>
+
+      <form id="placeForm">
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            autocomplete="off"
+            required
+          />
+          <div class="suggestions" id="suggestions"></div>
+        </div>
+        <div class="form-group">
+          <label for="place">Place</label>
+          <input type="text" id="place" name="place" required />
+        </div>
         
-        const data = await response.json()
-        alert(data.message)
-        window.location.reload()
-      }
-    });
-  </script>
- 
-</body>
+        <div class="form-group">
+          <label for="city">City</label>
+          <input type="text" id="city" name="city" required />
+        </div>
+
+       
+
+        <!-- <div class="form-group">
+          <label for="state">State</label>
+          <input type="text" id="state" name="state" required />
+        </div>
+
+        <div class="form-group">
+          <label for="country">Country</label>
+          <input type="text" id="country" name="country" required />
+        </div> -->
+
+        <div class="form-group">
+          <label for="latitude">Latitude</label>
+          <input type="text" id="latitude" name="latitude" readonly />
+        </div>
+
+        <div class="form-group">
+          <label for="longitude">Longitude</label>
+          <input type="text" id="longitude" name="longitude" readonly />
+        </div>
+
+        <div id="map"></div>
+
+        <div class="form-actions">
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+      let map = L.map("map").setView([20.5937, 78.9629], 5); // Center on India
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      let marker = L.marker([20.5937, 78.9629], { draggable: true }).addTo(map);
+
+      marker.on("dragend", function (event) {
+        let position = marker.getLatLng();
+        document.getElementById("latitude").value = position.lat;
+        document.getElementById("longitude").value = position.lng;
+      });
+      let debounceTimer;
+
+      document.getElementById("location").addEventListener("input", function () {
+        clearTimeout(debounceTimer); // Clear the previous timer
+
+        let query = this.value.trim();
+        if (query.length < 3) {
+          document.getElementById("suggestions").style.display = "none";
+          return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+          try {
+            let response = await fetch(
+              `https://nominatim.openstreetmap.org/search?format=json&q=${query}`
+            );
+            let results = await response.json();
+
+            let suggestionsBox = document.getElementById("suggestions");
+            suggestionsBox.innerHTML = "";
+
+            results.forEach((place) => {
+              let div = document.createElement("div");
+              div.textContent = place.display_name;
+              div.onclick = function () {
+                document.getElementById("location").value = place.display_name;
+                document.getElementById("latitude").value = place.lat;
+                document.getElementById("longitude").value = place.lon;
+
+                let components = place.display_name.split(", ");
+                document.getElementById("city").value = components[1] || "";
+                document.getElementById("place").value = components[0] || "";
+
+                map.setView([place.lat, place.lon], 13);
+                marker.setLatLng([place.lat, place.lon]);
+
+                suggestionsBox.style.display = "none";
+              };
+
+              suggestionsBox.appendChild(div);
+              suggestionsBox.style.display = "block";
+            });
+          } catch (error) {
+            console.log("Error fetching suggestions");
+          }
+        }, 1000); // 500ms debounce delay
+      });
+
+      document
+        .getElementById("placeForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const data = {
+            place: document.getElementById("place").value,
+            city: document.getElementById("city").value,
+            // district: document.getElementById("district").value,
+            // state: document.getElementById("state").value,
+            // country: document.getElementById("country").value,
+            latitude: document.getElementById("latitude").value,
+            longitude: document.getElementById("longitude").value,
+          };
+
+          const response = await fetch("/admin/add-place", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/json" },
+          });
+
+          const result = await response.json();
+          alert(result.message);
+          window.location.reload();
+        });
+    </script>
+  </body>
 </html>
