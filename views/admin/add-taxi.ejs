@@ -31,11 +31,12 @@
             <div class="col-md-8 col-lg-6">
                 <div class="form-container">
                     <h2 class="text-center mb-4">Add Taxi</h2>
-                    <form action="#" method="post">
+                    <form action="#" method="post" id="taxi-form">
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" name="name" required>
                         </div>
+                        <span id="name-err" style="color: red;"></span>
                         
                         <div class="mb-3">
                             <label for="type" class="form-label">Type</label>
@@ -50,11 +51,12 @@
                                 <option value="lory">Lory</option>
                             </select>
                         </div>
-                        
+                        <span id="type-err" style="color: red;"></span>
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone</label>
                             <input type="text" class="form-control" id="phone" name="phone" required>
                         </div>
+                        <span id="phone-err" style="color: red;"></span>
                         
                         <div class="mb-3 position-relative">
                             <label for="placeInput" class="form-label">Place</label>
@@ -64,6 +66,7 @@
                                 
                             </ul>
                         </div>
+                        <span id="place-err" style="color: red;"></span>
                         
                         
                         <button type="submit" class="btn btn-primary w-100">Submit</button>
@@ -78,6 +81,16 @@
             const placeInput = document.getElementById("placeInput");
             const placeDropdown = document.getElementById("placeDropdown");
             const placeId = document.getElementById("placeId")
+            const form = document.getElementById("taxi-form");
+            const nameInput = document.getElementById("name");
+            const typeInput = document.getElementById("type");
+            const phoneInput = document.getElementById("phone");
+            const nameErr = document.getElementById("name-err")
+            const typeErr = document.getElementById("type-err")
+            const phoneErr = document.getElementById("phone-err")
+            const placeErr = document.getElementById("place-err")
+            
+
             let places = <%- JSON.stringify(places) %>; 
     
             placeInput.addEventListener("input", function () {
@@ -120,7 +133,56 @@
             });
 
             
+            //form validation
+            form.addEventListener("submit", function (e) {
+                // e.preventDefault()
+                let isValid = true;
 
+                // Name validation (min 3 chars)
+                if (nameInput.value.trim().length < 3) {
+                    nameErr.innerHTML="Name must be at least 3 characters long.";
+                    isValid = false;
+                    
+                }else{
+                    nameErr.innerHTML = ''
+                    
+                }
+
+                // Type validation (must select an option)
+                if (typeInput.value === "") {
+                    typeErr.innerHTML = "Please select a type.";
+                    isValid = false;
+                } else {
+                    typeErr.innerHTML = "";
+                }
+
+                // Phone validation (must be a 10-digit number)
+                const phonePattern = /^[0-9]{10}$/;
+                if (!phonePattern.test(phoneInput.value.trim())) {
+                    phoneErr.innerHTML = "Please enter a valid 10-digit phone number.";
+                    isValid = false;
+                } else {
+                    phoneErr.innerHTML = "";
+                }
+
+                // Place validation (must select from dropdown)
+                if (placeInput.value.trim() === "") {
+                    placeErr.innerHTML = "Please select a valid place from the dropdown.";
+                    isValid = false;
+                } else {
+                    placeErr.innerHTML = "";
+                }
+                
+                
+
+                // Prevent form submission if validation fails
+                // e.preventDefault()
+                if (!isValid) {
+                    e.preventDefault();
+                    return false
+
+                }
+            });
         });
     </script>
 </body>
