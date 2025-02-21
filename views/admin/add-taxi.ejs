@@ -31,7 +31,7 @@
             <div class="col-md-8 col-lg-6">
                 <div class="form-container">
                     <h2 class="text-center mb-4">Add Taxi</h2>
-                    <form action="#" method="post" id="taxi-form">
+                    <form  id="taxi-form">
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control" id="name" name="name" required>
@@ -134,8 +134,8 @@
 
             
             //form validation
-            form.addEventListener("submit", function (e) {
-                // e.preventDefault()
+            form.addEventListener("submit",async function (e) {
+                e.preventDefault()
                 let isValid = true;
 
                 // Name validation (min 3 chars)
@@ -180,7 +180,32 @@
                 if (!isValid) {
                     e.preventDefault();
                     return false
+                }
 
+                try {
+                    const response = await fetch("/admin/add-taxi",{
+                        method:"POST",
+                        headers: { "Content-Type": "application/json" },
+                        body:JSON.stringify({
+                            name:nameInput.value,
+                            type:typeInput.value,
+                            placeId:placeId.value,
+                            phone:phoneInput.value
+                        })
+                        
+                    })
+
+                    const data = await response.json()
+                    if(!response.ok){
+                        alert(data.message)
+                        window.location.reload()
+                    }else{
+                        alert(data.message)
+                        window.location.reload()
+                    }
+
+                } catch (error) {
+                    console.log("error in add taxi fetch ",error.message)
                 }
             });
         });
