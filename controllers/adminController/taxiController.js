@@ -1,11 +1,25 @@
-const getAddTaxi = (req,res)=>{
+const Place = require('../../models/Place')
+
+const getAddTaxi =async (req,res)=>{
     try {
-        res.render("add-taxi")
+        const places = await Place.find()
+        
+        res.render("add-taxi",{places})
     } catch (error) {
         console.log("error in get add taxi "+error.message)
     }
 }
 
+const postAddTaxi = async (req,res)=>{
+    try {
+        console.log(req.body)
+    } catch (error) {
+        console.log("error in post add taxi "+error.message)
+    }
+}
+
 module.exports = {
-    getAddTaxi
+    getAddTaxi,
+    postAddTaxi
+
 }

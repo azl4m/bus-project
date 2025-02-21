@@ -31,15 +31,15 @@
             <div class="col-md-8 col-lg-6">
                 <div class="form-container">
                     <h2 class="text-center mb-4">Add Taxi</h2>
-                    <form>
+                    <form action="#" method="post">
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" required>
+                            <input type="text" class="form-control" id="name" name="name" required>
                         </div>
                         
                         <div class="mb-3">
                             <label for="type" class="form-label">Type</label>
-                            <select class="form-select" id="type" required>
+                            <select class="form-select" id="type" name="type" required>
                                 <option value="">Select Type</option>
                                 <option value="car">Car</option>
                                 <option value="goods">Goods</option>
@@ -53,30 +53,18 @@
                         
                         <div class="mb-3">
                             <label for="phone" class="form-label">Phone</label>
-                            <input type="text" class="form-control" id="phone" required>
+                            <input type="text" class="form-control" id="phone" name="phone" required>
                         </div>
                         
-                        
-                        
-                        <div class="mb-3">
-                            <label for="place" class="form-label">Place</label>
-                            <select class="form-select" id="place" required>
-                                <option value="">Select Place</option>
-                                <option value="Downtown">Downtown</option>
-                                <option value="Airport">Airport</option>
-                                <option value="Train Station">Train Station</option>
-                            </select>
+                        <div class="mb-3 position-relative">
+                            <label for="placeInput" class="form-label">Place</label>
+                            <input type="text" class="form-control" id="placeInput" placeholder="Type a place..." autocomplete="off">
+                            <input type="hidden" name="placeId" id="placeId">
+                            <ul id="placeDropdown" class="dropdown-menu w-100" style="max-height: 200px; overflow-y: auto; display: none;">
+                                
+                            </ul>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="city" class="form-label">City</label>
-                            <select class="form-select" id="city" required>
-                                <option value="">Select City</option>
-                                <option value="New York">New York</option>
-                                <option value="Los Angeles">Los Angeles</option>
-                                <option value="Chicago">Chicago</option>
-                            </select>
-                        </div>
                         
                         <button type="submit" class="btn btn-primary w-100">Submit</button>
                     </form>
@@ -84,5 +72,56 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const placeInput = document.getElementById("placeInput");
+            const placeDropdown = document.getElementById("placeDropdown");
+            const placeId = document.getElementById("placeId")
+            let places = <%- JSON.stringify(places) %>; 
+    
+            placeInput.addEventListener("input", function () {
+                let inputValue = this.value.toLowerCase();
+                
+                let filteredPlaces = places.filter(p => p.place.toLowerCase().startsWith(inputValue));
+                
+                // Sort alphabetically
+                filteredPlaces.sort((a, b) => a.place.localeCompare(b.place));
+    
+                // Clear dropdown
+                placeDropdown.innerHTML = "";
+    
+                // Append filtered results
+                if (filteredPlaces.length > 0) {
+                    placeDropdown.style.display = "block";
+                    filteredPlaces.forEach(p => {
+                        let listItem = document.createElement("li");
+                        listItem.innerHTML = `<a href="#" class="dropdown-item">${p.place}</a>`;
+                        
+                        listItem.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            placeInput.value = p.place;
+                            placeId.value = p._id
+                            placeDropdown.style.display = "none";
+                        });
+    
+                        placeDropdown.appendChild(listItem);
+                    });
+                } else {
+                    placeDropdown.style.display = "none";
+                }
+            });
+    
+            // Hide dropdown when clicking outside
+            document.addEventListener("click", function (e) {
+                if (!placeInput.contains(e.target) && !placeDropdown.contains(e.target)) {
+                    placeDropdown.style.display = "none";
+                }
+            });
+
+            
+
+        });
+    </script>
 </body>
 </html>

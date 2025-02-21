@@ -29,5 +29,9 @@ router.post('/edit-route',routeController.postEditRoute)
 =======
 
 router.get('/add-taxi',taxiController.getAddTaxi)
+taxi
+router.post('/add-taxi',taxiController.postAddTaxi)
+=======
  main
+main
 module.exports = router
