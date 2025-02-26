@@ -27,4 +27,6 @@ router.post('/edit-route',routeController.postEditRoute)
 router.get('/add-taxi',taxiController.getAddTaxi)
 router.post('/add-taxi',taxiController.postAddTaxi)
 router.get("/taxi",taxiController.taxiList)
+router.get("/edit-taxi",taxiController.getEditTaxi)
+
 module.exports = router
