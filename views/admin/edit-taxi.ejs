@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Taxi</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+
+      .form-container {
+        max-width: 500px;
+        margin: 50px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      @media (max-width: 576px) {
+        .form-container {
+          margin: 20px;
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="form-container">
+            <h2 class="text-center mb-4">EditTaxi</h2>
+            <form id="taxi-form" action="/admin/edit-taxi" method="post">
+              <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="name"
+                  value="<%= taxi.name %>"
+                  required
+                />
+              </div>
+              <input type="hidden" value="<%= taxi._id %>" name="id">
+              <span id="name-err" style="color: red"></span>
+
+              <div class="mb-3">
+                <label for="type" class="form-label">Type</label>
+                <select class="form-select" id="type" name="type" required>
+                  <option value="<%= taxi.type %>"><%= taxi.type %></option>
+                  <option value="car">Car</option>
+                  <option value="goods">Goods</option>
+                  <option value="traveler">Traveler</option>
+                  <option value="auto">Auto</option>
+                  <option value="ambulance">Ambulance</option>
+                  <option value="for-wheeler-goods">For Wheeler Goods</option>
+                  <option value="lory">Lory</option>
+                </select>
+              </div>
+              <span id="type-err" style="color: red"></span>
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="phone"
+                  name="phone"
+                  value="<%= taxi.phone %>"
+                  required
+                />
+              </div>
+              <span id="phone-err" style="color: red"></span>
+
+              <div class="mb-3 position-relative">
+                <label for="placeInput" class="form-label">Place</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="placeInput"
+                  value="<%= taxi.placeId.place %>"
+                  autocomplete="off"
+                />
+                <input
+                  type="hidden"
+                  name="placeId"
+                  id="placeId"
+                  value="<%= taxi.placeId._id %>"
+                />
+                <ul
+                  id="placeDropdown"
+                  class="dropdown-menu w-50"
+                  style="max-height: 100px; overflow-y: auto; display: none"
+                ></ul>
+              </div>
+              <span id="place-err" style="color: red"></span>
+
+              <button type="submit" class="btn btn-primary w-100">
+                Submit
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          const placeInput = document.getElementById("placeInput");
+          const placeDropdown = document.getElementById("placeDropdown");
+          const placeId = document.getElementById("placeId")
+          const form = document.getElementById("taxi-form");
+          const nameInput = document.getElementById("name");
+          const typeInput = document.getElementById("type");
+          const phoneInput = document.getElementById("phone");
+          const nameErr = document.getElementById("name-err")
+          const typeErr = document.getElementById("type-err")
+          const phoneErr = document.getElementById("phone-err")
+          const placeErr = document.getElementById("place-err")
+
+          
+          let places = <%- JSON.stringify(places) %>;
+
+          placeInput.addEventListener("input", function () {
+              let inputValue = this.value.toLowerCase();
+              
+              let filteredPlaces = places.filter(p => p.place.toLowerCase().startsWith(inputValue));
+
+              // Sort alphabetically
+              filteredPlaces.sort((a, b) => a.place.localeCompare(b.place));
+
+              // Clear dropdown
+              placeDropdown.innerHTML = "";
+
+              // Append filtered results
+              if (filteredPlaces.length > 0) {
+                  placeDropdown.style.display = "block";
+                  filteredPlaces.forEach(p => {
+                      let listItem = document.createElement("li");
+                      listItem.innerHTML = `<a href="#" class="dropdown-item">${p.place}</a>`;
+
+                      listItem.addEventListener("click", function (e) {
+                          e.preventDefault();
+                          placeInput.value = p.place;
+                          placeId.value = p._id
+                          placeDropdown.style.display = "none";
+                      });
+
+                      placeDropdown.appendChild(listItem);
+                  });
+              } else {
+                  placeDropdown.style.display = "none";
+              }
+          });
+
+          
+
+          
+
+          // Hide dropdown when clicking outside
+          document.addEventListener("click", function (e) {
+              if (!placeInput.contains(e.target) && !placeDropdown.contains(e.target)) {
+                  placeDropdown.style.display = "none";
+              }
+          });
+
+
+          //form validation
+          form.addEventListener("submit", async function (e) {
+
+            console.log("inside subimt")
+              let isValid = true;
+            console.log(isValid)
+              // Name validation (min 3 chars)
+              if (nameInput.value.trim().length < 3) {
+                  nameErr.innerHTML = "Name must be at least 3 characters long.";
+                  isValid = false;
+
+              } else {
+                  nameErr.innerHTML = ''
+
+              }
+              
+              // // Type validation (must select an option)
+              if (typeInput.value === "") {
+                  typeErr.innerHTML = "Please select a type.";
+                  isValid = false;
+              } else {
+                  typeErr.innerHTML = "";
+              }
+
+              // Phone validation (must be a 10-digit number)
+              const phonePattern = /^[0-9]{10}$/;
+              if (!phonePattern.test(phoneInput.value.trim())) {
+                  phoneErr.innerHTML = "Please enter a valid 10-digit phone number.";
+                  isValid = false;
+              } else {
+                  phoneErr.innerHTML = "";
+              }
+              
+
+              // Place validation (must select from dropdown)
+              if (placeInput.value.trim() === "") {
+                  placeErr.innerHTML = "Please select a valid place from the dropdown.";
+                  isValid = false;
+              } else {
+                  placeErr.innerHTML = "";
+              }
+
+              
+              
+              if (!isValid) {
+                  e.preventDefault();
+
+              }
+          });
+      });
+    </script>
+  </body>
+</html>
