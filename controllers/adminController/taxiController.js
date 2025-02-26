@@ -34,8 +34,16 @@ const postAddTaxi = async (req,res)=>{
     }
 }
 
+const taxiList = async (req,res)=>{
+    try {
+        res.render("taxilist")
+    } catch (error) {
+        console.log("error in taxi list "+error.message)
+    }
+}
+
 module.exports = {
     getAddTaxi,
-    postAddTaxi
-
+    postAddTaxi,
+    taxiList
 }
