@@ -15,7 +15,7 @@ const getAddTaxi = async (req, res) => {
 const postAddTaxi = async (req, res) => {
     try {
         const { name, type, placeId, phone } = req.body
-        const oldTaxi = await Taxi.findOne({ phone: phone })
+        const oldTaxi = await Taxi.findOne({ phone: phone ,})
 
         if (oldTaxi) {
             return res.status(400).json({ message: "the phone number allredy exist" })
