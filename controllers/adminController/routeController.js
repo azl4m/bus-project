@@ -22,7 +22,6 @@ const postAddRoute = async (req, res) => {
         .status(400)
         .json({ message: "Duplicate placeId detected in stops array" });
     }
-
     const route = new Route({
       routeName: req.body?.routeName,
       stops: stops,

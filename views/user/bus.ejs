@@ -32,6 +32,60 @@
     font-size: 20px;
     cursor: pointer;
   }
+  /* .loading-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  } */
+   /* Bus animation container */
+.loading-container {
+  display: none; /* Initially hidden */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2000;
+}
+
+/* Bus image */
+.bus {
+  width: 100px;
+  animation: moveBus 1.5s linear infinite;
+}
+
+/* Bus moving effect */
+@keyframes moveBus {
+  0% {
+    transform: translateX(-100px);
+  }
+  50% {
+    transform: translateX(100px);
+  }
+  100% {
+    transform: translateX(-100px);
+  }
+}
+
 </style>
 <div class="main-search-container">
   <div class="search-container">
@@ -81,12 +135,20 @@
     </form>
   </div>
 </div>
+<!-- <div id="loadingSpinner" class="loading-spinner" style="display: none">
+  <div class="spinner"></div>
+</div> -->
+
 <!-- Modal -->
 <div id="noBusModal" class="modal">
   <div class="modal-content">
     <span class="close-btn" onclick="closeModal()">&times;</span>
     <p>No buses found for the selected route. Please try another route!</p>
   </div>
+</div>
+<!-- Loading Bus Animation -->
+<div id="loading" class="loading-container">
+  <img src="/image/bus.svg" class="bus" alt="Loading..." />
 </div>
 <script>
              function showModal() {
@@ -95,7 +157,7 @@
 
   function closeModal() {
     console.log("inside close modal");
-    
+
     document.getElementById("noBusModal").style.display = "none";
   }
     document.addEventListener("DOMContentLoaded", function () {
@@ -214,7 +276,7 @@
                   secondArrow.classList.remove("fa-arrow-up")
               }
           })
- 
+
 
   // Close modal when clicking outside it
   window.onclick = function (event) {
@@ -231,7 +293,10 @@
             console.log(fromId.value);
           console.log(toId.value);
             event.preventDefault()
-              const response = await fetch("/check-bus-search",{
+            // Show the spinner
+    document.getElementById("loading").style.display = "block";
+try {
+  const response = await fetch("/check-bus-search",{
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body:JSON.stringify({
@@ -240,11 +305,17 @@
               })
               const result = await response.json()
               if(!response.ok){
+                console.log("inside response not ok");
+
                   showModal()
               }else{
                 console.log("Form is valid, submitting...");
                 this.submit()
               }
+} catch (error) {
+  console.error("Error:", error);
+}
+              
           })
       })
 </script>
