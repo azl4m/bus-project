@@ -42,6 +42,8 @@ const checkBusSearch = async (req, res) => {
         ],
       },
     });
+    console.log(routes);
+    
     if (!routes) {
       return res
         .status(400)
@@ -62,6 +64,8 @@ const checkBusSearch = async (req, res) => {
         .status(400)
         .json({ message: "No bus found in this route", sucess: false });
     }
+    console.log(flatBuses);
+    
     return res.status(200).json({ sucess: false });
   } catch (error) {
     console.log("error in check bus search");
@@ -70,6 +74,9 @@ const checkBusSearch = async (req, res) => {
 };
 const postSearchBus = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = req.query.limit || 10;
+    const skip = (page-1)*limit;
     const { fromId, toId } = req.body;
     const from = await Place.findById(fromId);
     const to = await Place.findById(toId);
@@ -79,6 +86,7 @@ const postSearchBus = async (req, res) => {
     if (!from || !to) {
       return res.status(200).json({ message: "No bus found in this route" });
     }
+    console.log("hello from result bus");
     const fromid = from._id;
     const toid = to._id;
 
@@ -116,6 +124,7 @@ const postSearchBus = async (req, res) => {
           const route = routes.find((route) =>
             route._id.equals(schedule.routeId)
           );
+          const routeName = route.routeName
           if (!route) return null;
 
           const fromStop = route.stops.find((stop) =>
@@ -125,11 +134,11 @@ const postSearchBus = async (req, res) => {
           if (!fromStop || !toStop) return null;
 
           // Calculate departure and arrival times
-          const departureTime = BusHelper.calculateArrivalTime(
+          const arrivalTime = BusHelper.calculateArrivalTime(
             schedule.departureTime,
             fromStop.delay // Add delay for `fromStop` only
           );
-          const arrivalTime = BusHelper.calculateArrivalTime(
+          const departureTime = BusHelper.calculateArrivalTime(
             schedule.departureTime,
             toStop.delay // Add delay for `toStop` only
           );
@@ -137,20 +146,28 @@ const postSearchBus = async (req, res) => {
           // Calculate duration
 
           const duration = BusHelper.calculateDuration(
-            departureTime,
-            arrivalTime
+            arrivalTime,
+            departureTime
           ).formatted;
+          console.log("duration :"+duration);
+          
 
           return {
             busName: bus.busName,
             departureTime,
             arrivalTime,
             duration,
+            routeName
           };
         })
         .filter(Boolean); // Remove null entries for schedules without matches
     });
+    console.log("hello from result bus above result");
+    
     console.log(result);
+    return res.render('bus-result',{
+      busData:result
+    })
   } catch (error) {
     console.log("error in search bus");
     console.log(error);
